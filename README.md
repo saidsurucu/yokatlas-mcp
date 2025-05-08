@@ -24,12 +24,12 @@ Claude Desktop uygulamasına yükleme yapabilmek için öncelikle `uv` ve `fastm
 * **macOS ve Linux için:**
     Terminali açın ve aşağıdaki komutu çalıştırın:
     ```bash
-    curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
+    curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
 * **Windows için (PowerShell kullanarak):**
     PowerShell'i açın ve aşağıdaki komutu çalıştırın:
     ```bash
-    powershell -c "irm [https://astral.sh/uv/install.ps1](https://astral.sh/uv/install.ps1) | iex"
+    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
     ```
 * **Alternatif olarak `pip` ile (tüm platformlar):**
     Eğer yukarıdaki yöntemler işe yaramazsa veya `pip` kullanmayı tercih ederseniz:
@@ -53,7 +53,7 @@ pip install fastmcp
 ### 3. Proje Dosyalarını Alın
 Bu YOKATLAS MCP sunucusunun kaynak kodlarını bilgisayarınıza indirin.
 ```bash
-git clone [https://github.com/saidsurucu/yokatlas-mcp.git](https://github.com/saidsurucu/yokatlas-mcp.git)
+git clone https://github.com/saidsurucu/yokatlas-mcp.git
 cd yokatlas-mcp
 ```
 Bu README.md dosyasının ve `yokatlas_mcp_server.py` script'inin bulunduğu dizine `cd` komutu ile geçmiş olacaksınız.
@@ -154,27 +154,4 @@ Bu FastMCP sunucusu aşağıdaki araçları sunar:
 
 ## 📜 Lisans
 
-Bu proje MIT Lisansı altında lisanslanmıştır. Daha fazla bilgi için [MIT Lisansı (İngilizce)](https://opensource.org/licenses/MIT) adresine bakabilirsiniz. Projenizin kök dizinine tam lisans metnini içeren bir `LICENSE` veya `LICENSE.md` dosyası eklemeniz önerilir.
-
-MIT Lisansının standart metni genellikle şu şekildedir. Lisans metnini belirtmek için \`\`\`text ... \`\`\` kullanıyoruz:
-
-```text
-Copyright (c) 2025 saidsurucu
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Bu proje MIT Lisansı altında lisanslanmıştır. 
