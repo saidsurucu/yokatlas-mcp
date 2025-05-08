@@ -24,12 +24,12 @@ Claude Desktop uygulamasına yükleme yapabilmek için öncelikle `uv` ve `fastm
 * **macOS ve Linux için:**
     Terminali açın ve aşağıdaki komutu çalıştırın:
     ```bash
-    curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
+    curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
 * **Windows için (PowerShell kullanarak):**
     PowerShell'i açın ve aşağıdaki komutu çalıştırın:
     ```bash
-    powershell -c "irm [https://astral.sh/uv/install.ps1](https://astral.sh/uv/install.ps1) | iex"
+    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
     ```
 * **Alternatif olarak `pip` ile (tüm platformlar):**
     Eğer yukarıdaki yöntemler işe yaramazsa veya `pip` kullanmayı tercih ederseniz:
@@ -53,7 +53,7 @@ pip install fastmcp
 ### 3. Proje Dosyalarını Alın
 Bu YOKATLAS MCP sunucusunun kaynak kodlarını bilgisayarınıza indirin.
 ```bash
-git clone [https://github.com/saidsurucu/yokatlas-mcp.git](https://github.com/saidsurucu/yokatlas-mcp.git)
+git clone https://github.com/saidsurucu/yokatlas-mcp.git
 cd yokatlas-mcp
 ```
 Bu README.md dosyasının ve `yokatlas_mcp_server.py` script'inin bulunduğu dizine `cd` komutu ile geçmiş olacaksınız.
