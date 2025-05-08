@@ -1,0 +1,138 @@
+import asyncio # Required for async yokatlas_py functions
+
+from fastmcp import FastMCP
+
+# Import the YOKATLAS-py classes
+from yokatlas_py.lisansatlasi import YOKATLASLisansAtlasi
+from yokatlas_py.lisanstercihsihirbazi import YOKATLASLisansTercihSihirbazi
+from yokatlas_py.onlisansatlasi import YOKATLASOnlisansAtlasi
+from yokatlas_py.onlisanstercihsihirbazi import YOKATLASOnlisansTercihSihirbazi
+
+# Create a FastMCP server instance
+mcp = FastMCP(name="YOKATLAS_API_Server", description="Provides access to YOKATLAS data via MCP.")
+
+# Tool for YOKATLAS Onlisans Atlasi
+@mcp.tool()
+async def get_associate_degree_atlas_details(program_id: str, year: int) -> dict:
+    """
+    Fetches all details for a specific associate degree program (Önlisans Atlası)
+    for a given year.
+    """
+    try:
+        onlisans_atlasi = YOKATLASOnlisansAtlasi({'program_id': program_id, 'year': year})
+        result = await onlisans_atlasi.fetch_all_details()
+        return result
+    except Exception as e:
+        # Log error or handle it as appropriate for your MCP server
+        # For now, re-raising or returning an error structure
+        print(f"Error in get_associate_degree_atlas_details: {e}")
+        return {"error": str(e), "program_id": program_id, "year": year}
+
+# Tool for YOKATLAS Lisans Atlasi
+@mcp.tool()
+async def get_bachelor_degree_atlas_details(program_id: str, year: int) -> dict:
+    """
+    Fetches all details for a specific bachelor's degree program (Lisans Atlası)
+    for a given year.
+    """
+    try:
+        lisans_atlasi = YOKATLASLisansAtlasi({'program_id': program_id, 'year': year})
+        result = await lisans_atlasi.fetch_all_details()
+        return result
+    except Exception as e:
+        print(f"Error in get_bachelor_degree_atlas_details: {e}")
+        return {"error": str(e), "program_id": program_id, "year": year}
+
+# Tool for YOKATLAS Lisans Tercih Sihirbazi
+@mcp.tool()
+def search_bachelor_degree_programs(
+    yop_kodu: str = '',
+    uni_adi: str = '',
+    program_adi: str = '',
+    sehir_adi: str = '',
+    universite_turu: str = '', # e.g., 'Devlet', 'Vakıf'
+    ucret_burs: str = '',     # e.g., 'Ücretsiz', '%100 Burslu', 'Burslu', 'Ücretli'
+    ogretim_turu: str = '',   # e.g., 'Örgün', 'İkinci Öğretim'
+    doluluk: str = '',        # e.g., '1' (Dolu), '0' (Boş), '' (Tümü)
+    puan_turu: str = 'SAY',   # e.g., SAY, EA, SOZ, DIL
+    ust_bs: int = 0,          # Upper bound for success ranking (Başarı Sırası)
+    alt_bs: int = 3000000,    # Lower bound for success ranking
+    page: int = 1
+) -> dict:
+    """
+    Searches for bachelor's degree programs (Lisans Tercih Sihirbazı)
+    based on various criteria.
+    """
+    params = {
+        'yop_kodu': yop_kodu,
+        'uni_adi': uni_adi,
+        'program_adi': program_adi,
+        'sehir_adi': sehir_adi,
+        'universite_turu': universite_turu,
+        'ucret_burs': ucret_burs,
+        'ogretim_turu': ogretim_turu,
+        'doluluk': doluluk,
+        'puan_turu': puan_turu.lower(), # API might expect lowercase puan_turu
+        'ust_bs': ust_bs,
+        'alt_bs': alt_bs,
+        'page': page
+    }
+    try:
+        lisans_tercih = YOKATLASLisansTercihSihirbazi(params)
+        result = lisans_tercih.search()
+        return result
+    except Exception as e:
+        print(f"Error in search_bachelor_degree_programs: {e}")
+        return {"error": str(e), "params_used": params}
+
+# Tool for YOKATLAS Onlisans Tercih Sihirbazi
+@mcp.tool()
+def search_associate_degree_programs(
+    yop_kodu: str = '',
+    uni_adi: str = '',
+    program_adi: str = '',
+    sehir_adi: str = '',
+    universite_turu: str = '', # e.g., 'Devlet', 'Vakıf'
+    ucret_burs: str = '',     # e.g., 'Ücretsiz', '%100 Burslu', 'Burslu', 'Ücretli'
+    ogretim_turu: str = '',   # e.g., 'Örgün', 'İkinci Öğretim'
+    doluluk: str = '',        # e.g., '1' (Dolu), '0' (Boş), '' (Tümü)
+    ust_puan: float = 550.0,    # Upper bound for score (Puan)
+    alt_puan: float = 150.0,    # Lower bound for score
+    page: int = 1
+) -> dict:
+    """
+    Searches for associate degree programs (Önlisans Tercih Sihirbazı)
+    based on various criteria.
+    """
+    params = {
+        'yop_kodu': yop_kodu,
+        'uni_adi': uni_adi,
+        'program_adi': program_adi,
+        'sehir_adi': sehir_adi,
+        'universite_turu': universite_turu,
+        'ucret_burs': ucret_burs,
+        'ogretim_turu': ogretim_turu,
+        'doluluk': doluluk,
+        'ust_puan': ust_puan,
+        'alt_puan': alt_puan,
+        'page': page
+    }
+    try:
+        onlisans_tercih = YOKATLASOnlisansTercihSihirbazi(params)
+        result = onlisans_tercih.search()
+        return result
+    except Exception as e:
+        print(f"Error in search_associate_degree_programs: {e}")
+        return {"error": str(e), "params_used": params}
+
+if __name__ == "__main__":
+    print("Starting YOKATLAS API MCP Server...")
+    print("To run this server with FastMCP CLI: fastmcp run yokatlas_mcp_server.py")
+    print("Or to run directly (e.g., with SSE on port 8000): python yokatlas_mcp_server.py")
+    
+    # To run with default stdio transport:
+    #mcp.run()
+
+    # Example: Run with SSE transport on a specific port
+    # This makes it accessible over HTTP for MCP clients that support SSE.
+    mcp.run(transport="sse", host="127.0.0.1", port=8000)

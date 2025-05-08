@@ -1,0 +1,4 @@
+fastmcp
+yokatlas-py
+beautifulsoup4
+setuptools
