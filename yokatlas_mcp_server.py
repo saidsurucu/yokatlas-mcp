@@ -13,35 +13,35 @@ mcp = FastMCP(name="YOKATLAS_API_Server", description="Provides access to YOKATL
 
 # Tool for YOKATLAS Onlisans Atlasi
 @mcp.tool()
-async def get_associate_degree_atlas_details(program_id: str, year: int) -> dict:
+async def get_associate_degree_atlas_details(yop_kodu: str, year: int) -> dict:
     """
     Fetches all details for a specific associate degree program (Önlisans Atlası)
-    for a given year.
+    for a given year. The details include General Information, Quota Placement, Gender Distribution, City Distribution, Geographical Region Distribution, Placement Distribution by City, Placement by City Total, Education Status, Education Status Total, Graduation Year Distribution, Graduation Year Total, High School Field Distribution, High School Field Total, High School Group and Type Distribution, Placement Distribution by High School, High School Valedictorian Placement, Minimum Score and Ranking Statistics, Last Person Placed Information, Average Net Scores of Placed Students, Placement Score Information, Placement Ranking Information, Preference Statistics, Placement Preference Statistics, Preference Usage Rates, Preferred University Types, Preferred Universities, Preferred Cities, Preferred Program Types, Preferred Programs, Academic Staff Numbers, Registered Student Gender Distribution, Graduation Year Gender Distribution, Exchange Program Information, Transfer Information.
     """
     try:
-        onlisans_atlasi = YOKATLASOnlisansAtlasi({'program_id': program_id, 'year': year})
+        onlisans_atlasi = YOKATLASOnlisansAtlasi({'program_id': yop_kodu, 'year': year})
         result = await onlisans_atlasi.fetch_all_details()
         return result
     except Exception as e:
         # Log error or handle it as appropriate for your MCP server
         # For now, re-raising or returning an error structure
         print(f"Error in get_associate_degree_atlas_details: {e}")
-        return {"error": str(e), "program_id": program_id, "year": year}
+        return {"error": str(e), "program_id": yop_kodu, "year": year}
 
 # Tool for YOKATLAS Lisans Atlasi
 @mcp.tool()
-async def get_bachelor_degree_atlas_details(program_id: str, year: int) -> dict:
+async def get_bachelor_degree_atlas_details(yop_kodu: str, year: int) -> dict:
     """
     Fetches all details for a specific bachelor's degree program (Lisans Atlası)
-    for a given year.
+    for a given year. The details include General Information, Quota Placement, Gender Distribution, City Distribution, Geographical Region Distribution, Placement Distribution by City, Placement by City Total, Education Status, Education Status Total, Graduation Year Distribution, Graduation Year Total, High School Field Distribution, High School Field Total, High School Group and Type Distribution, Placement Distribution by High School, High School Valedictorian Placement, Minimum Score and Ranking Statistics, Last Person Placed Information, Average Net Scores of Placed Students, Placement Score Information, Placement Ranking Information, Preference Statistics, Placement Preference Statistics, Preference Usage Rates, Preferred University Types, Preferred Universities, Preferred Cities, Preferred Program Types, Preferred Programs, Academic Staff Numbers, Registered Student Gender Distribution, Graduation Year Gender Distribution, Exchange Program Information, Transfer Information.
     """
     try:
-        lisans_atlasi = YOKATLASLisansAtlasi({'program_id': program_id, 'year': year})
+        lisans_atlasi = YOKATLASLisansAtlasi({'program_id': yop_kodu, 'year': year})
         result = await lisans_atlasi.fetch_all_details()
         return result
     except Exception as e:
         print(f"Error in get_bachelor_degree_atlas_details: {e}")
-        return {"error": str(e), "program_id": program_id, "year": year}
+        return {"error": str(e), "program_id": yop_kodu, "year": year}
 
 # Tool for YOKATLAS Lisans Tercih Sihirbazi
 @mcp.tool()
