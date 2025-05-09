@@ -2,6 +2,8 @@
 
 Bu proje, [YÖKATLAS](https://yokatlas.yok.gov.tr/) verilerine erişimi sağlayan `yokatlas-py` Python kütüphanesini kullanarak bir [FastMCP](https://www.gofastmcp.com/) sunucusu oluşturur. Bu sayede, YÖKATLAS API fonksiyonları, Model Context Protocol (MCP) destekleyen LLM (Büyük Dil Modeli) uygulamaları ve diğer istemciler tarafından araç (tool) olarak kullanılabilir hale gelir.
 
+![örnek](./ornek.png)
+
 ## 🎯 Temel Özellikler
 
 * YÖKATLAS verilerine programatik erişim için standart bir MCP arayüzü.
