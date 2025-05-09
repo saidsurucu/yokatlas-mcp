@@ -98,7 +98,7 @@ Bu komut, `uv` kullanarak sunucunuz için izole bir Python ortamı oluşturacak,
     * **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
 3.  **Yapılandırma Dosyasını Düzenleyin:**
-    `claude_desktop_config.json` dosyasını bir metin düzenleyici ile açın. Dosyanın içeriği aşağıdaki gibi bir yapıda olacaktır. `mcpServers` objesine (eğer `mcpServers` objesi yoksa, önce onu ve kapsayan `{}` parantezlerini oluşturun) "YOKATLAS API Servisi" için aşağıdaki JSON bloğunu ekleyin. JSON'ı belirtmek için \`\`\`json ... \`\`\` kullanıyoruz:
+    `claude_desktop_config.json` dosyasını bir metin düzenleyici ile açın. Dosyanın içeriği aşağıdaki gibi bir yapıda olacaktır. `mcpServers` objesine (eğer `mcpServers` objesi yoksa, önce onu ve kapsayan `{}` parantezlerini oluşturun) "YOKATLAS API Servisi" için aşağıdaki JSON bloğunu ekleyin.
 
     ```json
     {
