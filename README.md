@@ -96,6 +96,7 @@ uvx --from git+https://github.com/saidsurucu/yokatlas-mcp yokatlas-mcp
 Bu komut, sunucuyu GitHub'dan doğrudan çalıştırır ve Claude Desktop ile MCP protokolü üzerinden iletişim kurar. Tüm bağımlılıklar otomatik olarak yönetilir.
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 ### 4. Sunucuya Özel Bağımlılıkların Bilinmesi
 Bu sunucunun (`yokatlas_mcp_server.py`) çalışması için bazı Python kütüphanelerine ihtiyacı vardır. Bu kütüphaneler Claude Desktop entegrasyonu sırasında (`fastmcp install` veya manuel kurulumda) belirtilecektir:
 * `yokatlas-py`
@@ -135,6 +136,24 @@ Bu komut, `uv` kullanarak sunucunuz için izole bir Python ortamı oluşturacak,
 =======
 Bu komut, sunucuyu Claude Desktop uygulamanıza kalıcı olarak ekleyecektir.
 >>>>>>> Stashed changes
+=======
+### Alternatif: Yerel Kurulum
+
+Eğer projeyi yerel olarak geliştirmek veya değiştirmek isterseniz:
+
+1. Projeyi klonlayın:
+   ```bash
+   git clone https://github.com/saidsurucu/yokatlas-mcp.git
+   cd yokatlas-mcp
+   ```
+
+2. `fastmcp install` ile kurun:
+   ```bash
+   fastmcp install yokatlas_mcp_server.py --name "YOKATLAS API Servisi"
+   ```
+
+Bu komut, sunucuyu Claude Desktop uygulamanıza kalıcı olarak ekleyecektir.
+>>>>>>> Stashed changes
 
 ## ⚙️ Claude Desktop Manuel Kurulumu (Yapılandırma Dosyası ile - Alternatif)
 
@@ -159,6 +178,7 @@ Sunucuyu Claude Desktop'a manuel olarak eklemek için yapılandırma dosyasını
    }
    ```
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 2.  **Geliştirici Ayarlarına Girin ve Yapılandırma Dosyasını Düzenleyin:**
     Açılan ayarlar penceresinde sol taraftaki menüden "Developer" (Geliştirici) sekmesine tıklayın. Ardından "Edit Config" (Yapılandırmayı Düzenle) düğmesine tıklayın.
@@ -203,6 +223,9 @@ Sunucuyu Claude Desktop'a manuel olarak eklemek için yapılandırma dosyasını
 =======
 3. **Claude Desktop'ı Yeniden Başlatın**
 >>>>>>> Stashed changes
+=======
+3. **Claude Desktop'ı Yeniden Başlatın**
+>>>>>>> Stashed changes
 
 Başarılı bir kurulumdan sonra, Claude Desktop uygulamasında giriş kutusunun sağ alt köşesinde çekiç (🛠️) simgesini ve tıkladığınızda "YOKATLAS API Servisi" araçlarını görmelisiniz.
 
@@ -226,6 +249,7 @@ Bu FastMCP sunucusu aşağıdaki araçları sunar:
     * **Açıklama:** Çeşitli kriterlere göre önlisans programlarını (Önlisans Tercih Sihirbazı) arar.
     * **Parametreler:** `uni_adi: str`, `program_adi: str`, `alt_puan: float`, `ust_puan: float` vb. (Detaylar için `yokatlas_mcp_server.py` script'indeki tool tanımına bakınız.)
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 5.  **`generate_pdf_report`**
     * **Açıklama:** YOKATLAS verilerinden güzel formatlanmış PDF raporu oluşturur ve yerel sisteme kaydeder.
@@ -272,6 +296,8 @@ Claude Desktop uygulamasında şöyle bir örnek iş akışı kullanabilirsiniz:
 
 PDF raporlarınız otomatik olarak bilgisayarınızın İndirilenler (Downloads) klasörüne kaydedilecektir.
 =======
+=======
+>>>>>>> Stashed changes
 ## 🔧 Diğer MCP İstemcileri ile Kullanım
 
 Bu bölüm, YOKATLAS MCP aracını 5ire gibi Claude Desktop dışındaki MCP istemcileriyle kullanmak isteyenler içindir.
@@ -318,6 +344,9 @@ Bu bölüm, YOKATLAS MCP aracını 5ire gibi Claude Desktop dışındaki MCP ist
    - "Boğaziçi Üniversitesi Bilgisayar Mühendisliği programının detaylarını getir"
    - "SAY puan türünde 400-500 bin sıralama aralığındaki programları ara"
    - "İstanbul'daki devlet üniversitelerinin tıp programlarını listele"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 ## 📜 Lisans

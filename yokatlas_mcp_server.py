@@ -17,6 +17,9 @@ mcp = FastMCP(
 =======
 # Create a FastMCP server instance
 mcp = FastMCP("YOKATLAS API Server")
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 # Tool for YOKATLAS Onlisans Atlasi
@@ -137,6 +140,7 @@ def search_associate_degree_programs(
         return {"error": str(e), "params_used": params}
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 # Tool for generating PDF Reports from search results
 @mcp.tool()
@@ -202,6 +206,27 @@ if __name__ == "__main__":
     # Example: Run with SSE transport on a specific port
     # This makes it accessible over HTTP for MCP clients that support SSE.
     mcp.run(transport="sse", host="127.0.0.1", port=8000)
+=======
+def main():
+    """Main entry point for the YOKATLAS MCP server."""
+    import sys
+    
+    # Default to stdio transport for MCP compatibility
+    transport = "stdio"
+    
+    # Check if running in development mode
+    if "--dev" in sys.argv:
+        transport = "sse"
+        print("Starting YOKATLAS API MCP Server in development mode...")
+        print("Server will be available at http://127.0.0.1:8000")
+        mcp.run(transport=transport, host="127.0.0.1", port=8000)
+    else:
+        # Run with stdio transport for Claude Desktop and other MCP clients
+        mcp.run(transport=transport)
+
+if __name__ == "__main__":
+    main()
+>>>>>>> Stashed changes
 =======
 def main():
     """Main entry point for the YOKATLAS MCP server."""
