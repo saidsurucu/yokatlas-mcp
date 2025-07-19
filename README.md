@@ -108,6 +108,8 @@ Bu bölüm, YOKATLAS MCP aracını 5ire gibi Claude Desktop dışındaki MCP ist
 <details>
 <summary>🔧 Gemini CLI ile Kullanmak İçin Kurulum</summary>
 
+**Video Rehber:** [Gemini CLI MCP Kurulum Videosu](https://youtu.be/mP_4ulb81zw)
+
 **Ön Gereksinimler:** Python, uv, (Windows için) Microsoft Visual C++ Redistributable'ın sisteminizde kurulu olduğundan emin olun. Detaylı bilgi için yukarıdaki "5ire için Kurulum" bölümündeki ilgili adımlara bakabilirsiniz.
 
 1. **Gemini CLI ayarlarını yapılandırın:**
