@@ -63,80 +63,8 @@ Claude Desktop ayarlarından (Settings > Developer > Edit Config) yapılandırma
 }
 ```
 
-### Geliştirici Kurulumu
+Başarılı bir kurulumdan sonra, Claude Desktop uygulamasında YOKATLAS API araçlarını kullanabilirsiniz.
 
-Projeyi yerel olarak geliştirmek için:
-
-1. **Repoyu klonlayın:**
-   ```bash
-   git clone https://github.com/saidsurucu/yokatlas-mcp.git
-   cd yokatlas-mcp
-   ```
-
-2. **Bağımlılıkları kurun:**
-   ```bash
-   uv pip install -e .
-   ```
-
-3. **Test edin:**
-   ```bash
-   yokatlas-mcp --dev  # Geliştirme modu (HTTP)
-   yokatlas-mcp        # Üretim modu (STDIO)
-   ```
-
-## 🚀 Claude Desktop Entegrasyonu (Hızlı Kurulum - Önerilen)
-
-Bu sunucuyu Claude Desktop uygulamasına eklemenin en kolay yolu `uvx` komutunu kullanmaktır:
-
-```bash
-uvx --from git+https://github.com/saidsurucu/yokatlas-mcp yokatlas-mcp
-```
-
-Bu komut, sunucuyu GitHub'dan doğrudan çalıştırır ve Claude Desktop ile MCP protokolü üzerinden iletişim kurar. Tüm bağımlılıklar otomatik olarak yönetilir.
-
-### Alternatif: Yerel Kurulum
-
-Eğer projeyi yerel olarak geliştirmek veya değiştirmek isterseniz:
-
-1. Projeyi klonlayın:
-   ```bash
-   git clone https://github.com/saidsurucu/yokatlas-mcp.git
-   cd yokatlas-mcp
-   ```
-
-2. `fastmcp install` ile kurun:
-   ```bash
-   fastmcp install yokatlas_mcp_server.py --name "YOKATLAS API Servisi"
-   ```
-
-Bu komut, sunucuyu Claude Desktop uygulamanıza kalıcı olarak ekleyecektir.
-
-## ⚙️ Claude Desktop Manuel Kurulumu (Yapılandırma Dosyası ile - Alternatif)
-
-Sunucuyu Claude Desktop'a manuel olarak eklemek için yapılandırma dosyasını düzenleyebilirsiniz:
-
-1. **Claude Desktop Ayarlarını Açın:**
-   - Settings > Developer > Edit Config
-
-2. **Yapılandırma Dosyasına Ekleyin:**
-   ```json
-   {
-     "mcpServers": {
-       "YOKATLAS API Servisi": {
-         "command": "uvx",
-         "args": [
-           "--from",
-           "git+https://github.com/saidsurucu/yokatlas-mcp",
-           "yokatlas-mcp"
-         ]
-       }
-     }
-   }
-   ```
-
-3. **Claude Desktop'ı Yeniden Başlatın**
-
-Başarılı bir kurulumdan sonra, Claude Desktop uygulamasında giriş kutusunun sağ alt köşesinde çekiç (🛠️) simgesini ve tıkladığınızda "YOKATLAS API Servisi" araçlarını görmelisiniz.
 
 ## 🛠️ Kullanılabilir Araçlar (MCP Tools)
 
