@@ -19,50 +19,83 @@ Bu proje, [YÖKATLAS](https://yokatlas.yok.gov.tr/) verilerine erişimi sağlaya
 * **Python Sürümü:** Python 3.8 veya daha yeni bir sürümünün sisteminizde kurulu olması gerekmektedir. Python'ı [python.org](https://www.python.org/downloads/) adresinden indirebilirsiniz.
 * **pip:** Python ile birlikte gelen `pip` paket yöneticisinin çalışır durumda olması gerekir.
 
-## ⚙️ Kurulum Adımları (Claude Desktop için)
+## ⚙️ Kurulum Adımları
 
-Claude Desktop uygulamasına yükleme yapabilmek için öncelikle `uv` ve `fastmcp` komut satırı araçlarını kurmanız, ardından proje dosyalarını almanız gerekmektedir.
+### Hızlı Kurulum (Önerilen)
 
-### 1. `uv` Kurulumu
-`uv`, Rust ile yazılmış son derece hızlı bir Python paket kurucusu, çözümleyicisi ve sanal ortam yöneticisidir. `fastmcp` kurulumu ve Claude Desktop entegrasyonu için `uv` kullanılması önerilmektedir.
+Claude Desktop'a entegre etmek için sadece `uv` kurulumuna ihtiyacınız var:
 
-* **macOS ve Linux için:**
-    Terminali açın ve aşağıdaki komutu çalıştırın:
-    ```bash
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
-* **Windows için (PowerShell kullanarak):**
-    PowerShell'i açın ve aşağıdaki komutu çalıştırın:
-    ```bash
-    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
-* **Alternatif olarak `pip` ile (tüm platformlar):**
-    Eğer yukarıdaki yöntemler işe yaramazsa veya `pip` kullanmayı tercih ederseniz:
-    ```bash
-    pip install uv
-    ```
-Kurulumdan sonra, `uv` komutunun sisteminiz tarafından tanınması için terminalinizi yeniden başlatmanız veya `PATH` ortam değişkeninizi güncellemeniz (örneğin, Linux/macOS için `source $HOME/.cargo/env` veya `source $HOME/.bashrc`, `source $HOME/.zshrc` gibi) gerekebilir. `uv --version` komutu ile kurulumu doğrulayabilirsiniz.
+#### 1. `uv` Kurulumu
+`uv`, hızlı bir Python paket yöneticisidir.
 
-### 2. `fastmcp` Komut Satırı Aracının (CLI) Kurulumu
-`fastmcp` CLI, MCP sunucularını yönetmek ve özellikle `fastmcp install` komutu ile Claude Desktop'a kurmak için gereklidir. `uv` kullanarak kurulması önerilir:
+* **macOS ve Linux:**
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  ```
+
+* **Windows (PowerShell):**
+  ```bash
+  powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+  ```
+
+* **pip ile kurulum:**
+  ```bash
+  pip install uv
+  ```
+
+Kurulumu doğrulayın: `uv --version`
+
+#### 2. Claude Desktop'a Ekleme
+
+Claude Desktop ayarlarından (Settings > Developer > Edit Config) yapılandırma dosyasına aşağıdaki girdiyi ekleyin:
+
+```json
+{
+  "mcpServers": {
+    "YOKATLAS API Servisi": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/saidsurucu/yokatlas-mcp",
+        "yokatlas-mcp"
+      ]
+    }
+  }
+}
+```
+
+### Geliştirici Kurulumu
+
+Projeyi yerel olarak geliştirmek için:
+
+1. **Repoyu klonlayın:**
+   ```bash
+   git clone https://github.com/saidsurucu/yokatlas-mcp.git
+   cd yokatlas-mcp
+   ```
+
+2. **Bağımlılıkları kurun:**
+   ```bash
+   uv pip install -e .
+   ```
+
+3. **Test edin:**
+   ```bash
+   yokatlas-mcp --dev  # Geliştirme modu (HTTP)
+   yokatlas-mcp        # Üretim modu (STDIO)
+   ```
+
+## 🚀 Claude Desktop Entegrasyonu (Hızlı Kurulum - Önerilen)
+
+Bu sunucuyu Claude Desktop uygulamasına eklemenin en kolay yolu `uvx` komutunu kullanmaktır:
 
 ```bash
-uv pip install fastmcp
+uvx --from git+https://github.com/saidsurucu/yokatlas-mcp yokatlas-mcp
 ```
-Eğer `uv` kurulumunda sorun yaşadıysanız veya `pip` kullanmak isterseniz, `fastmcp`'yi `pip` ile de kurabilirsiniz:
-```bash
-pip install fastmcp
-```
-`fastmcp --version` komutu ile kurulumu doğrulayabilirsiniz.
 
-### 3. Proje Dosyalarını Alın
-Bu YOKATLAS MCP sunucusunun kaynak kodlarını bilgisayarınıza indirin.
-```bash
-git clone https://github.com/saidsurucu/yokatlas-mcp.git
-cd yokatlas-mcp
-```
-Bu README.md dosyasının ve `yokatlas_mcp_server.py` script'inin bulunduğu dizine `cd` komutu ile geçmiş olacaksınız.
+Bu komut, sunucuyu GitHub'dan doğrudan çalıştırır ve Claude Desktop ile MCP protokolü üzerinden iletişim kurar. Tüm bağımlılıklar otomatik olarak yönetilir.
 
+<<<<<<< Updated upstream
 ### 4. Sunucuya Özel Bağımlılıkların Bilinmesi
 Bu sunucunun (`yokatlas_mcp_server.py`) çalışması için bazı Python kütüphanelerine ihtiyacı vardır. Bu kütüphaneler Claude Desktop entegrasyonu sırasında (`fastmcp install` veya manuel kurulumda) belirtilecektir:
 * `yokatlas-py`
@@ -72,11 +105,24 @@ Bu sunucunun (`yokatlas_mcp_server.py`) çalışması için bazı Python kütüp
 * `fastmcp` (sunucunun kendisi için de gereklidir)
 
 (Eğer sunucuyu bağımsız olarak geliştirmek veya test etmek isterseniz, bir sanal ortam (`python -m venv .venv` & `.venv/bin/activate` veya `.venv\Scripts\activate`) oluşturup bu bağımlılıkları `uv pip install fastmcp yokatlas-py beautifulsoup4 setuptools reportlab` komutuyla kurabilirsiniz.)
+=======
+### Alternatif: Yerel Kurulum
 
-## 🚀 Claude Desktop Entegrasyonu (`fastmcp install` ile - Önerilen)
+Eğer projeyi yerel olarak geliştirmek veya değiştirmek isterseniz:
+>>>>>>> Stashed changes
 
-Yukarıdaki kurulum adımlarını tamamladıktan sonra, bu sunucuyu Claude Desktop uygulamasına kalıcı bir araç olarak eklemenin en kolay yolu `fastmcp install` komutunu kullanmaktır:
+1. Projeyi klonlayın:
+   ```bash
+   git clone https://github.com/saidsurucu/yokatlas-mcp.git
+   cd yokatlas-mcp
+   ```
 
+2. `fastmcp install` ile kurun:
+   ```bash
+   fastmcp install yokatlas_mcp_server.py --name "YOKATLAS API Servisi"
+   ```
+
+<<<<<<< Updated upstream
 1.  Terminalde `yokatlas_mcp_server.py` dosyasının bulunduğu `yokatlas-mcp` dizininde olduğunuzdan emin olun.
 2.  Aşağıdaki komutu çalıştırın:
     ```bash
@@ -86,16 +132,34 @@ Yukarıdaki kurulum adımlarını tamamladıktan sonra, bu sunucuyu Claude Deskt
     * `--with yokatlas-py --with beautifulsoup4 --with setuptools --with reportlab`: Sunucunun çalışması için gereken Python bağımlılıklarını belirtir. `fastmcp` kendisi de bu ortama dahil edilecektir (`fastmcp install` bunu otomatik olarak yönetir).
 
 Bu komut, `uv` kullanarak sunucunuz için izole bir Python ortamı oluşturacak, belirtilen bağımlılıkları kuracak ve aracı Claude Desktop uygulamasına kaydedecektir. Kurulum tamamlandıktan sonra "YOKATLAS API Servisi" Claude Desktop uygulamanızda kullanılabilir olacaktır.
+=======
+Bu komut, sunucuyu Claude Desktop uygulamanıza kalıcı olarak ekleyecektir.
+>>>>>>> Stashed changes
 
 ## ⚙️ Claude Desktop Manuel Kurulumu (Yapılandırma Dosyası ile - Alternatif)
 
-`fastmcp install` komutunu kullanmak yerine, sunucunuzu Claude Desktop uygulamasına manuel olarak da ekleyebilirsiniz. Bu yöntem, yapılandırma dosyasını doğrudan düzenlemeyi içerir ve daha fazla kontrol sağlar.
+Sunucuyu Claude Desktop'a manuel olarak eklemek için yapılandırma dosyasını düzenleyebilirsiniz:
 
-**Uyarı:** Yapılandırma dosyasını düzenlerken dikkatli olun. Hatalı bir yapılandırma Claude Desktop uygulamasının düzgün çalışmamasına neden olabilir.
+1. **Claude Desktop Ayarlarını Açın:**
+   - Settings > Developer > Edit Config
 
-1.  **Claude Desktop Ayarlarını Açın:**
-    Claude Desktop uygulamasında, menü çubuğundan (macOS'te üst menü, Windows'ta genellikle uygulama içi menü) "Settings..." (Ayarlar...) seçeneğine gidin.
+2. **Yapılandırma Dosyasına Ekleyin:**
+   ```json
+   {
+     "mcpServers": {
+       "YOKATLAS API Servisi": {
+         "command": "uvx",
+         "args": [
+           "--from",
+           "git+https://github.com/saidsurucu/yokatlas-mcp",
+           "yokatlas-mcp"
+         ]
+       }
+     }
+   }
+   ```
 
+<<<<<<< Updated upstream
 2.  **Geliştirici Ayarlarına Girin ve Yapılandırma Dosyasını Düzenleyin:**
     Açılan ayarlar penceresinde sol taraftaki menüden "Developer" (Geliştirici) sekmesine tıklayın. Ardından "Edit Config" (Yapılandırmayı Düzenle) düğmesine tıklayın.
 
@@ -136,6 +200,9 @@ Bu komut, `uv` kullanarak sunucunuz için izole bir Python ortamı oluşturacak,
 
 4.  **Claude Desktop'ı Yeniden Başlatın:**
     Yapılandırma dosyasını kaydedip kapattıktan sonra, değişikliklerin etkili olması için Claude Desktop uygulamasını tamamen kapatıp yeniden başlatın.
+=======
+3. **Claude Desktop'ı Yeniden Başlatın**
+>>>>>>> Stashed changes
 
 Başarılı bir kurulumdan sonra, Claude Desktop uygulamasında giriş kutusunun sağ alt köşesinde çekiç (🛠️) simgesini ve tıkladığınızda "YOKATLAS API Servisi" araçlarını görmelisiniz.
 
@@ -159,6 +226,7 @@ Bu FastMCP sunucusu aşağıdaki araçları sunar:
     * **Açıklama:** Çeşitli kriterlere göre önlisans programlarını (Önlisans Tercih Sihirbazı) arar.
     * **Parametreler:** `uni_adi: str`, `program_adi: str`, `alt_puan: float`, `ust_puan: float` vb. (Detaylar için `yokatlas_mcp_server.py` script'indeki tool tanımına bakınız.)
 
+<<<<<<< Updated upstream
 5.  **`generate_pdf_report`**
     * **Açıklama:** YOKATLAS verilerinden güzel formatlanmış PDF raporu oluşturur ve yerel sisteme kaydeder.
     * **Parametreler:**
@@ -203,6 +271,54 @@ Claude Desktop uygulamasında şöyle bir örnek iş akışı kullanabilirsiniz:
    ```
 
 PDF raporlarınız otomatik olarak bilgisayarınızın İndirilenler (Downloads) klasörüne kaydedilecektir.
+=======
+## 🔧 Diğer MCP İstemcileri ile Kullanım
+
+Bu bölüm, YOKATLAS MCP aracını 5ire gibi Claude Desktop dışındaki MCP istemcileriyle kullanmak isteyenler içindir.
+
+### Ön Gereksinimler
+
+1. **Python Kurulumu:** Sisteminizde Python 3.12 veya üzeri kurulu olmalıdır. Kurulum sırasında "Add Python to PATH" (Python'ı PATH'e ekle) seçeneğini işaretlemeyi unutmayın. [Buradan indirebilirsiniz](https://www.python.org/downloads/).
+
+2. **Git Kurulumu (Windows):** Bilgisayarınıza git yazılımını [indirip kurun](https://git-scm.com/download/win). "Git for Windows/x64 Setup" seçeneğini indirmelisiniz.
+
+3. **uv Kurulumu:**
+   - **Windows Kullanıcıları (PowerShell):** Bir CMD ekranı açın ve bu kodu çalıştırın:
+     ```bash
+     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+     ```
+   - **Mac/Linux Kullanıcıları (Terminal):** Bir Terminal ekranı açın ve bu kodu çalıştırın:
+     ```bash
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+
+4. **Microsoft Visual C++ Redistributable (Windows):** Bazı Python paketlerinin doğru çalışması için gereklidir. [Buradan indirip kurun](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+
+### 5ire ile Kurulum
+
+1. İşletim sisteminize uygun 5ire MCP istemcisini indirip kurun.
+
+2. 5ire'ı açın. **Workspace → Providers** menüsünden kullanmak istediğiniz LLM servisinin API anahtarını girin.
+
+3. **Tools** menüsüne girin. **+Local** veya **New** yazan butona basın.
+
+4. Aşağıdaki bilgileri girin:
+   - **Tool Key:** `yokatlasmcp`
+   - **Name:** `YOKATLAS MCP`
+   - **Command:**
+     ```
+     uvx --from git+https://github.com/saidsurucu/yokatlas-mcp yokatlas-mcp
+     ```
+
+5. **Save** butonuna basarak kaydedin.
+
+6. Şimdi **Tools** altında **YOKATLAS MCP**'yi görüyor olmalısınız. Üstüne geldiğinizde sağda çıkan butona tıklayıp etkinleştirin (yeşil ışık yanmalı).
+
+7. Artık YOKATLAS MCP ile konuşabilirsiniz. Örnek sorgular:
+   - "Boğaziçi Üniversitesi Bilgisayar Mühendisliği programının detaylarını getir"
+   - "SAY puan türünde 400-500 bin sıralama aralığındaki programları ara"
+   - "İstanbul'daki devlet üniversitelerinin tıp programlarını listele"
+>>>>>>> Stashed changes
 
 ## 📜 Lisans
 

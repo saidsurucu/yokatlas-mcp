@@ -5,6 +5,7 @@ from yokatlas_py.lisanstercihsihirbazi import YOKATLASLisansTercihSihirbazi
 from yokatlas_py.onlisansatlasi import YOKATLASOnlisansAtlasi
 from yokatlas_py.onlisanstercihsihirbazi import YOKATLASOnlisansTercihSihirbazi
 
+<<<<<<< Updated upstream
 
 import yokatlas_pdf_generator
 
@@ -13,6 +14,10 @@ mcp = FastMCP(
     name="YOKATLAS_API_Server", description="Provides access to YOKATLAS data via MCP."
 )
 
+=======
+# Create a FastMCP server instance
+mcp = FastMCP("YOKATLAS API Server")
+>>>>>>> Stashed changes
 
 # Tool for YOKATLAS Onlisans Atlasi
 @mcp.tool()
@@ -131,6 +136,7 @@ def search_associate_degree_programs(
         print(f"Error in search_associate_degree_programs: {e}")
         return {"error": str(e), "params_used": params}
 
+<<<<<<< Updated upstream
 
 # Tool for generating PDF Reports from search results
 @mcp.tool()
@@ -196,3 +202,24 @@ if __name__ == "__main__":
     # Example: Run with SSE transport on a specific port
     # This makes it accessible over HTTP for MCP clients that support SSE.
     mcp.run(transport="sse", host="127.0.0.1", port=8000)
+=======
+def main():
+    """Main entry point for the YOKATLAS MCP server."""
+    import sys
+    
+    # Default to stdio transport for MCP compatibility
+    transport = "stdio"
+    
+    # Check if running in development mode
+    if "--dev" in sys.argv:
+        transport = "sse"
+        print("Starting YOKATLAS API MCP Server in development mode...")
+        print("Server will be available at http://127.0.0.1:8000")
+        mcp.run(transport=transport, host="127.0.0.1", port=8000)
+    else:
+        # Run with stdio transport for Claude Desktop and other MCP clients
+        mcp.run(transport=transport)
+
+if __name__ == "__main__":
+    main()
+>>>>>>> Stashed changes

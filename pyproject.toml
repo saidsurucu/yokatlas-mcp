@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yokatlas-mcp"
+version = "0.1.0"
+description = "MCP server for YOKATLAS API - Turkish Higher Education Atlas"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "fastmcp>=2.10.5",
+    "yokatlas-py>=0.2.6",
+    "setuptools>=80.9.0",
+]
+
+[project.scripts]
+yokatlas-mcp = "yokatlas_mcp_server:main"
+
+[tool.setuptools]
+py-modules = ["yokatlas_mcp_server"]
