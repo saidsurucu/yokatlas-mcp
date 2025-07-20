@@ -30,8 +30,18 @@ mcp = FastMCP("YOKATLAS API Server")
 @mcp.tool()
 async def get_associate_degree_atlas_details(yop_kodu: str, year: int) -> dict:
     """
-    Fetches all details for a specific associate degree program (Önlisans Atlası)
-    for a given year. The details include General Information, Quota Placement, Gender Distribution, City Distribution, Geographical Region Distribution, Placement Distribution by City, Placement by City Total, Education Status, Education Status Total, Graduation Year Distribution, Graduation Year Total, High School Field Distribution, High School Field Total, High School Group and Type Distribution, Placement Distribution by High School, High School Valedictorian Placement, Minimum Score and Ranking Statistics, Last Person Placed Information, Average Net Scores of Placed Students, Placement Score Information, Placement Ranking Information, Preference Statistics, Placement Preference Statistics, Preference Usage Rates, Preferred University Types, Preferred Universities, Preferred Cities, Preferred Program Types, Preferred Programs, Academic Staff Numbers, Registered Student Gender Distribution, Graduation Year Gender Distribution, Exchange Program Information, Transfer Information.
+    Get comprehensive details for a specific associate degree program from YOKATLAS Atlas.
+    
+    Parameters:
+    - yop_kodu (str): Program YÖP code (e.g., '120910060')
+    - year (int): Data year (e.g., 2024, 2023)
+    
+    Returns detailed information including:
+    - General program information and statistics
+    - Quota, placement, and score data
+    - Student demographics and distribution
+    - Academic staff and facility information
+    - Historical placement trends
     """
     try:
         onlisans_atlasi = YOKATLASOnlisansAtlasi({'program_id': yop_kodu, 'year': year})
@@ -47,8 +57,18 @@ async def get_associate_degree_atlas_details(yop_kodu: str, year: int) -> dict:
 @mcp.tool()
 async def get_bachelor_degree_atlas_details(yop_kodu: str, year: int) -> dict:
     """
-    Fetches all details for a specific bachelor's degree program (Lisans Atlası)
-    for a given year. The details include General Information, Quota Placement, Gender Distribution, City Distribution, Geographical Region Distribution, Placement Distribution by City, Placement by City Total, Education Status, Education Status Total, Graduation Year Distribution, Graduation Year Total, High School Field Distribution, High School Field Total, High School Group and Type Distribution, Placement Distribution by High School, High School Valedictorian Placement, Minimum Score and Ranking Statistics, Last Person Placed Information, Average Net Scores of Placed Students, Placement Score Information, Placement Ranking Information, Preference Statistics, Placement Preference Statistics, Preference Usage Rates, Preferred University Types, Preferred Universities, Preferred Cities, Preferred Program Types, Preferred Programs, Academic Staff Numbers, Registered Student Gender Distribution, Graduation Year Gender Distribution, Exchange Program Information, Transfer Information.
+    Get comprehensive details for a specific bachelor's degree program from YOKATLAS Atlas.
+    
+    Parameters:
+    - yop_kodu (str): Program YÖP code (e.g., '102210277')
+    - year (int): Data year (e.g., 2024, 2023)
+    
+    Returns detailed information including:
+    - General program information and statistics
+    - Quota, placement, and score data
+    - Student demographics and distribution
+    - Academic staff and facility information
+    - Historical placement trends
     """
     try:
         lisans_atlasi = YOKATLASLisansAtlasi({'program_id': yop_kodu, 'year': year})

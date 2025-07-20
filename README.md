@@ -194,12 +194,28 @@ Bu FastMCP sunucusu aşağıdaki araçları sunar:
 ### 📊 Atlas Detay Araçları
 
 3.  **`get_bachelor_degree_atlas_details`**
-    * **Açıklama:** Belirli bir lisans programının (Lisans Atlası) verilen yıldaki tüm detaylarını getirir.
-    * **Parametreler:** `program_id: str`, `year: int`
+    * **Açıklama:** Belirli bir lisans programının YOKATLAS Atlas'tan kapsamlı detaylarını getirir
+    * **Parametreler:**
+      - `yop_kodu` (str): Program YÖP kodu (örn: '102210277')
+      - `year` (int): Veri yılı (örn: 2024, 2023)
+    * **Döndürülen Veriler:**
+      - Genel program bilgileri ve istatistikleri
+      - Kontenjan, yerleşme ve puan verileri
+      - Öğrenci demografik dağılımları
+      - Akademik kadro ve tesis bilgileri
+      - Geçmiş yerleşme trendleri
 
 4.  **`get_associate_degree_atlas_details`**
-    * **Açıklama:** Belirli bir önlisans programının (Önlisans Atlası) verilen yıldaki tüm detaylarını getirir.
-    * **Parametreler:** `program_id: str`, `year: int`
+    * **Açıklama:** Belirli bir önlisans programının YOKATLAS Atlas'tan kapsamlı detaylarını getirir
+    * **Parametreler:**
+      - `yop_kodu` (str): Program YÖP kodu (örn: '120910060')
+      - `year` (int): Veri yılı (örn: 2024, 2023)
+    * **Döndürülen Veriler:**
+      - Genel program bilgileri ve istatistikleri
+      - Kontenjan, yerleşme ve puan verileri
+      - Öğrenci demografik dağılımları
+      - Akademik kadro ve tesis bilgileri
+      - Geçmiş yerleşme trendleri
 
 ### 🚀 Kullanım Örnekleri
 
@@ -221,6 +237,14 @@ Bu FastMCP sunucusu aşağıdaki araçları sunar:
 # 4. Önlisans programları
 "Anadolu üniversitesinin turizm ile ilgili önlisans programlarını bul"
 # → Fuzzy matching + kısmi eşleştirme ile önlisans arama
+
+# 5. Atlas detayları
+"102210277 YÖP kodlu programın 2024 yılı detaylarını getir"
+# → Program atlas detayları: kontenjan, yerleşme, puan istatistikleri
+
+# 6. Program kodu bulma ve atlas detayları
+"Boğaziçi bilgisayar mühendisliğini bul, sonra atlas detaylarını getir"
+# → Önce arama ile YÖP kodunu bul, sonra atlas detaylarını çek
 ```
 
 
