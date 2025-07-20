@@ -1,5 +1,6 @@
 import asyncio  # Required for async yokatlas_py functions
-from typing import Literal
+from typing import Literal, Annotated
+from pydantic import Field
 
 from fastmcp import FastMCP
 
@@ -29,7 +30,10 @@ mcp = FastMCP("YOKATLAS API Server")
 
 # Tool for YOKATLAS Onlisans Atlasi
 @mcp.tool()
-async def get_associate_degree_atlas_details(yop_kodu: str, year: int) -> dict:
+async def get_associate_degree_atlas_details(
+    yop_kodu: Annotated[str, Field(description="Program YÖP code (e.g., '120910060') - unique identifier for the associate degree program")],
+    year: Annotated[int, Field(description="Data year for statistics (e.g., 2024, 2023)", ge=2020, le=2030)]
+) -> dict:
     """
     Get comprehensive details for a specific associate degree program from YOKATLAS Atlas.
     
@@ -56,7 +60,10 @@ async def get_associate_degree_atlas_details(yop_kodu: str, year: int) -> dict:
 
 # Tool for YOKATLAS Lisans Atlasi
 @mcp.tool()
-async def get_bachelor_degree_atlas_details(yop_kodu: str, year: int) -> dict:
+async def get_bachelor_degree_atlas_details(
+    yop_kodu: Annotated[str, Field(description="Program YÖP code (e.g., '102210277') - unique identifier for the bachelor's degree program")],
+    year: Annotated[int, Field(description="Data year for statistics (e.g., 2024, 2023)", ge=2020, le=2030)]
+) -> dict:
     """
     Get comprehensive details for a specific bachelor's degree program from YOKATLAS Atlas.
     
@@ -83,15 +90,15 @@ async def get_bachelor_degree_atlas_details(yop_kodu: str, year: int) -> dict:
 @mcp.tool()
 def search_bachelor_degree_programs(
     # User-friendly parameters with fuzzy matching
-    university: str = '',              # University name (supports fuzzy matching like "boğaziçi", "odtu")
-    program: str = '',                 # Program name (supports partial matching like "bilgisayar", "mühendislik")
-    city: str = '',                    # City name (like "istanbul", "ankara")
-    score_type: Literal['SAY', 'EA', 'SOZ', 'DIL'] = 'SAY',  # Score type for bachelor programs
-    university_type: Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'] = '',  # University type
-    fee_type: Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'] = '',  # Fee/scholarship type
-    education_type: Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'] = '',  # Education type
-    availability: Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'] = '',  # Program availability status
-    results_limit: int = 50,           # Number of results to return (default: 50)
+    university: Annotated[str, Field(description="University name with fuzzy matching support (e.g., 'boğaziçi' → 'BOĞAZİÇİ ÜNİVERSİTESİ')")] = '',
+    program: Annotated[str, Field(description="Program/department name with partial matching (e.g., 'bilgisayar' finds all computer programs)")] = '',
+    city: Annotated[str, Field(description="City name where the university is located")] = '',
+    score_type: Annotated[Literal['SAY', 'EA', 'SOZ', 'DIL'], Field(description="Score type: SAY (Science), EA (Equal Weight), SOZ (Verbal), DIL (Language)")] = 'SAY',
+    university_type: Annotated[Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'], Field(description="University type: Devlet (State), Vakıf (Foundation), KKTC (TRNC), Yurt Dışı (International)")] = '',
+    fee_type: Annotated[Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'], Field(description="Fee status: Ücretsiz (Free), Ücretli (Paid), İÖ-Ücretli (Evening-Paid), Burslu (Scholarship), İndirimli (Discounted), AÖ-Ücretli (Open Education-Paid), UÖ-Ücretli (Distance Learning-Paid)")] = '',
+    education_type: Annotated[Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'], Field(description="Education type: Örgün (Regular), İkinci (Evening), Açıköğretim (Open Education), Uzaktan (Distance Learning)")] = '',
+    availability: Annotated[Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'], Field(description="Program availability: Doldu (Filled), Doldu# (Filled with conditions), Dolmadı (Not filled), Yeni (New program)")] = '',
+    results_limit: Annotated[int, Field(description="Maximum number of results to return", ge=1, le=500)] = 50,
     # Legacy parameter support for backward compatibility
     uni_adi: str = '',
     program_adi: str = '',
@@ -206,14 +213,14 @@ def search_bachelor_degree_programs(
 @mcp.tool()
 def search_associate_degree_programs(
     # User-friendly parameters with fuzzy matching
-    university: str = '',              # University name (supports fuzzy matching like "anadolu", "istanbul")
-    program: str = '',                 # Program name (supports partial matching like "bilgisayar", "turizm")
-    city: str = '',                    # City name (like "istanbul", "ankara")
-    university_type: Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'] = '',  # University type
-    fee_type: Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'] = '',  # Fee/scholarship type
-    education_type: Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'] = '',  # Education type
-    availability: Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'] = '',  # Program availability status
-    results_limit: int = 50,           # Number of results to return (default: 50)
+    university: Annotated[str, Field(description="University name with fuzzy matching support (e.g., 'anadolu' → 'ANADOLU ÜNİVERSİTESİ')")] = '',
+    program: Annotated[str, Field(description="Program name with partial matching (e.g., 'turizm' finds all tourism programs)")] = '',
+    city: Annotated[str, Field(description="City name where the university is located")] = '',
+    university_type: Annotated[Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'], Field(description="University type: Devlet (State), Vakıf (Foundation), KKTC (TRNC), Yurt Dışı (International)")] = '',
+    fee_type: Annotated[Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'], Field(description="Fee status: Ücretsiz (Free), Ücretli (Paid), İÖ-Ücretli (Evening-Paid), Burslu (Scholarship), İndirimli (Discounted), AÖ-Ücretli (Open Education-Paid), UÖ-Ücretli (Distance Learning-Paid)")] = '',
+    education_type: Annotated[Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'], Field(description="Education type: Örgün (Regular), İkinci (Evening), Açıköğretim (Open Education), Uzaktan (Distance Learning)")] = '',
+    availability: Annotated[Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'], Field(description="Program availability: Doldu (Filled), Doldu# (Filled with conditions), Dolmadı (Not filled), Yeni (New program)")] = '',
+    results_limit: Annotated[int, Field(description="Maximum number of results to return", ge=1, le=500)] = 50,
     # Legacy parameter support for backward compatibility
     yop_kodu: str = '',
     uni_adi: str = '',
