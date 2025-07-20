@@ -1,4 +1,5 @@
 import asyncio  # Required for async yokatlas_py functions
+from typing import Literal
 
 from fastmcp import FastMCP
 
@@ -85,10 +86,11 @@ def search_bachelor_degree_programs(
     university: str = '',              # University name (supports fuzzy matching like "boğaziçi", "odtu")
     program: str = '',                 # Program name (supports partial matching like "bilgisayar", "mühendislik")
     city: str = '',                    # City name (like "istanbul", "ankara")
-    score_type: str = 'SAY',          # Score type: SAY, EA, SOZ, DIL
-    university_type: str = '',         # University type: Devlet, Vakıf, KKTC, Yurt Dışı
-    fee_type: str = '',               # Fee type: Ücretsiz, Ücretli, Burslu, %100 Burslu, etc.
-    education_type: str = '',          # Education type: Örgün, İkinci, Açıköğretim, Uzaktan
+    score_type: Literal['SAY', 'EA', 'SOZ', 'DIL'] = 'SAY',  # Score type for bachelor programs
+    university_type: Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'] = '',  # University type
+    fee_type: Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'] = '',  # Fee/scholarship type
+    education_type: Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'] = '',  # Education type
+    availability: Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'] = '',  # Program availability status
     results_limit: int = 50,           # Number of results to return (default: 50)
     # Legacy parameter support for backward compatibility
     uni_adi: str = '',
@@ -207,9 +209,10 @@ def search_associate_degree_programs(
     university: str = '',              # University name (supports fuzzy matching like "anadolu", "istanbul")
     program: str = '',                 # Program name (supports partial matching like "bilgisayar", "turizm")
     city: str = '',                    # City name (like "istanbul", "ankara")
-    university_type: str = '',         # University type: Devlet, Vakıf, KKTC, Yurt Dışı
-    fee_type: str = '',               # Fee type: Ücretsiz, Ücretli, Burslu, %100 Burslu, etc.
-    education_type: str = '',          # Education type: Örgün, İkinci, Açıköğretim, Uzaktan
+    university_type: Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'] = '',  # University type
+    fee_type: Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'] = '',  # Fee/scholarship type
+    education_type: Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'] = '',  # Education type
+    availability: Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'] = '',  # Program availability status
     results_limit: int = 50,           # Number of results to return (default: 50)
     # Legacy parameter support for backward compatibility
     yop_kodu: str = '',
