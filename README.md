@@ -156,21 +156,72 @@ Bu bölüm, YOKATLAS MCP aracını 5ire gibi Claude Desktop dışındaki MCP ist
 
 Bu FastMCP sunucusu aşağıdaki araçları sunar:
 
-1.  **`get_associate_degree_atlas_details`**
-    * **Açıklama:** Belirli bir önlisans programının (Önlisans Atlası) verilen yıldaki tüm detaylarını getirir.
-    * **Parametreler:** `program_id: str`, `year: int`
+### 🔍 Akıllı Arama Araçları (Smart Search Tools)
 
-2.  **`get_bachelor_degree_atlas_details`**
+1.  **`search_bachelor_degree_programs`** ⭐ **YENİ Smart Search**
+    * **Açıklama:** Lisans programları için akıllı arama (Fuzzy matching ile)
+    * **Özellikler:**
+      - 🧠 **Fuzzy Matching:** "boğaziçi" → "BOĞAZİÇİ ÜNİVERSİTESİ"
+      - 🔎 **Kısmi Eşleştirme:** "bilgisayar" → tüm bilgisayar programları
+      - 📝 **Kullanıcı Dostu Parametreler:** `university`, `program`, `city`
+      - ✅ **Type-Safe Validation:** Pydantic modelleri ile
+    * **Parametreler:**
+      - `university` (str): Üniversite adı (fuzzy matching)
+      - `program` (str): Program adı (kısmi eşleştirme) 
+      - `city` (str): Şehir adı
+      - `score_type` (str): Puan türü (SAY, EA, SOZ, DIL)
+      - `university_type` (str): Üniversite türü (Devlet, Vakıf)
+      - `fee_type` (str): Ücret durumu
+      - `education_type` (str): Öğretim türü
+      - `results_limit` (int): Sonuç sayısı (varsayılan: 50)
+
+2.  **`search_associate_degree_programs`** ⭐ **YENİ Smart Search**
+    * **Açıklama:** Önlisans programları için akıllı arama (Fuzzy matching ile)
+    * **Özellikler:**
+      - 🧠 **Fuzzy Matching:** "anadolu" → "ANADOLU ÜNİVERSİTESİ"
+      - 🔎 **Kısmi Eşleştirme:** "turizm" → tüm turizm programları
+      - 📝 **Kullanıcı Dostu Parametreler:** `university`, `program`, `city`
+      - ⚡ **TYT Puan Sistemi:** Önlisans için özel puan sistemi
+    * **Parametreler:**
+      - `university` (str): Üniversite adı (fuzzy matching)
+      - `program` (str): Program adı (kısmi eşleştirme)
+      - `city` (str): Şehir adı
+      - `university_type` (str): Üniversite türü
+      - `fee_type` (str): Ücret durumu
+      - `education_type` (str): Öğretim türü
+      - `results_limit` (int): Sonuç sayısı (varsayılan: 50)
+
+### 📊 Atlas Detay Araçları
+
+3.  **`get_bachelor_degree_atlas_details`**
     * **Açıklama:** Belirli bir lisans programının (Lisans Atlası) verilen yıldaki tüm detaylarını getirir.
     * **Parametreler:** `program_id: str`, `year: int`
 
-3.  **`search_bachelor_degree_programs`**
-    * **Açıklama:** Çeşitli kriterlere göre lisans programlarını (Lisans Tercih Sihirbazı) arar.
-    * **Parametreler:** `uni_adi: str`, `program_adi: str`, `puan_turu: str` (örn: SAY, EA), `alt_bs: int`, `ust_bs: int` vb. (Detaylar için `yokatlas_mcp_server.py` script'indeki tool tanımına bakınız.)
+4.  **`get_associate_degree_atlas_details`**
+    * **Açıklama:** Belirli bir önlisans programının (Önlisans Atlası) verilen yıldaki tüm detaylarını getirir.
+    * **Parametreler:** `program_id: str`, `year: int`
 
-4.  **`search_associate_degree_programs`**
-    * **Açıklama:** Çeşitli kriterlere göre önlisans programlarını (Önlisans Tercih Sihirbazı) arar.
-    * **Parametreler:** `uni_adi: str`, `program_adi: str`, `alt_puan: float`, `ust_puan: float` vb. (Detaylar için `yokatlas_mcp_server.py` script'indeki tool tanımına bakınız.)
+### 🚀 Kullanım Örnekleri
+
+```python
+# Claude Desktop'ta kullanım örnekleri:
+
+# 1. Fuzzy matching ile üniversite arama
+"Boğaziçi üniversitesinin bilgisayar mühendisliği programlarını bul"
+# → "boğaziçi" otomatik olarak "BOĞAZİÇİ ÜNİVERSİTESİ" ile eşleşir
+
+# 2. Kısmi program adı ile arama  
+"İstanbul'daki tüm mühendislik programlarını listele"
+# → "mühendislik" kelimesi ile başlayan tüm programları bulur
+
+# 3. Şehir bazlı arama
+"Ankara'daki devlet üniversitelerindeki tıp programlarını göster"
+# → Şehir, üniversite türü ve program filtresi ile arama
+
+# 4. Önlisans programları
+"Anadolu üniversitesinin turizm ile ilgili önlisans programlarını bul"
+# → Fuzzy matching + kısmi eşleştirme ile önlisans arama
+```
 
 
 ## 📜 Lisans

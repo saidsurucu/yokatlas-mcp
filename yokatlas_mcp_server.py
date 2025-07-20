@@ -2,25 +2,26 @@ import asyncio  # Required for async yokatlas_py functions
 
 from fastmcp import FastMCP
 
-# Import the YOKATLAS-py classes with new API structure
+# Import the new smart search functions (v0.4.3+)
 try:
-    from yokatlas_py import YOKATLASLisansTercihSihirbazi, YOKATLASOnlisansTercihSihirbazi
+    from yokatlas_py import search_lisans_programs, search_onlisans_programs
     from yokatlas_py import YOKATLASLisansAtlasi, YOKATLASOnlisansAtlasi
-    NEW_API = True
-except ImportError:
-    # Fallback to old import structure
-    from yokatlas_py.lisansatlasi import YOKATLASLisansAtlasi
-    from yokatlas_py.lisanstercihsihirbazi import YOKATLASLisansTercihSihirbazi
-    from yokatlas_py.onlisansatlasi import YOKATLASOnlisansAtlasi
-    from yokatlas_py.onlisanstercihsihirbazi import YOKATLASOnlisansTercihSihirbazi
-    NEW_API = False
-
-# Try to import models for new API
-try:
     from yokatlas_py.models import SearchParams, ProgramInfo
-    HAS_MODELS = True
+    NEW_SMART_API = True
 except ImportError:
-    HAS_MODELS = False
+    # Fallback to older API structure
+    try:
+        from yokatlas_py import YOKATLASLisansTercihSihirbazi, YOKATLASOnlisansTercihSihirbazi
+        from yokatlas_py import YOKATLASLisansAtlasi, YOKATLASOnlisansAtlasi
+        from yokatlas_py.models import SearchParams, ProgramInfo
+        NEW_SMART_API = False
+    except ImportError:
+        # Final fallback to very old structure
+        from yokatlas_py.lisansatlasi import YOKATLASLisansAtlasi
+        from yokatlas_py.lisanstercihsihirbazi import YOKATLASLisansTercihSihirbazi
+        from yokatlas_py.onlisansatlasi import YOKATLASOnlisansAtlasi
+        from yokatlas_py.onlisanstercihsihirbazi import YOKATLASOnlisansTercihSihirbazi
+        NEW_SMART_API = False
 
 # Create a FastMCP server instance
 mcp = FastMCP("YOKATLAS API Server")
@@ -57,133 +58,247 @@ async def get_bachelor_degree_atlas_details(yop_kodu: str, year: int) -> dict:
         print(f"Error in get_bachelor_degree_atlas_details: {e}")
         return {"error": str(e), "program_id": yop_kodu, "year": year}
 
-# Tool for YOKATLAS Lisans Tercih Sihirbazi
+# Tool for YOKATLAS Lisans Search with Smart Features
 @mcp.tool()
 def search_bachelor_degree_programs(
-    # New API parameters (used if available)
-    sehir: str = '',          # City name for new API
-    length: int = 10,         # Number of results for new API
-    puan_turu: str = 'SAY',   # Score type for new API
-    # Legacy parameters (backward compatibility)
-    yop_kodu: str = '',
+    # User-friendly parameters with fuzzy matching
+    university: str = '',              # University name (supports fuzzy matching like "boğaziçi", "odtu")
+    program: str = '',                 # Program name (supports partial matching like "bilgisayar", "mühendislik")
+    city: str = '',                    # City name (like "istanbul", "ankara")
+    score_type: str = 'SAY',          # Score type: SAY, EA, SOZ, DIL
+    university_type: str = '',         # University type: Devlet, Vakıf, KKTC, Yurt Dışı
+    fee_type: str = '',               # Fee type: Ücretsiz, Ücretli, Burslu, %100 Burslu, etc.
+    education_type: str = '',          # Education type: Örgün, İkinci, Açıköğretim, Uzaktan
+    results_limit: int = 50,           # Number of results to return (default: 50)
+    # Legacy parameter support for backward compatibility
     uni_adi: str = '',
     program_adi: str = '',
-    sehir_adi: str = '',
-    universite_turu: str = '', # e.g., 'Devlet', 'Vakıf'
-    ucret_burs: str = '',     # e.g., 'Ücretsiz', '%100 Burslu', 'Burslu', 'Ücretli'
-    ogretim_turu: str = '',   # e.g., 'Örgün', 'İkinci Öğretim'
-    doluluk: str = '',        # e.g., '1' (Dolu), '0' (Boş), '' (Tümü)
-    ust_bs: int = 0,          # Upper bound for success ranking (Başarı Sırası)
-    alt_bs: int = 3000000,    # Lower bound for success ranking
-    page: int = 1
+    sehir: str = '',
+    puan_turu: str = '',
+    universite_turu: str = '',
+    ucret_burs: str = '',
+    ogretim_turu: str = '',
+    length: int = 0
 ) -> dict:
     """
-    Searches for bachelor's degree programs (Lisans Tercih Sihirbazı)
-    based on various criteria. Supports both new and legacy API parameters.
+    Search for bachelor's degree programs with smart fuzzy matching and user-friendly parameters.
     
-    New API parameters: sehir, length, puan_turu
-    Legacy parameters: yop_kodu, uni_adi, program_adi, sehir_adi, etc.
+    Smart Features:
+    - Fuzzy university name matching (e.g., "boğaziçi" → "BOĞAZİÇİ ÜNİVERSİTESİ")
+    - Partial program name matching (e.g., "bilgisayar" finds all computer programs)
+    - Intelligent parameter normalization
+    - Type-safe validation
+    
+    Parameters:
+    - university: University name (fuzzy matching supported)
+    - program: Program/department name (partial matching supported)
+    - city: City name
+    - score_type: Score type (SAY, EA, SOZ, DIL)
+    - university_type: Type of university (Devlet, Vakıf, etc.)
+    - fee_type: Fee/scholarship information
+    - education_type: Type of education (Örgün, İkinci, etc.)
+    - results_limit: Maximum number of results to return
     """
     try:
-        if HAS_MODELS and NEW_API:
-            # Use new API with models if available
-            new_params = {}
-            if sehir:
-                new_params['sehir'] = sehir
-            if length and length != 10:
-                new_params['length'] = length
-            if puan_turu:
-                new_params['puan_turu'] = puan_turu.lower()
-            if universite_turu:
-                new_params['universite_turu'] = universite_turu
-                
-            # Try SearchParams validation
-            try:
-                validated_params = SearchParams(**new_params)
-                search_params = validated_params.model_dump(exclude_none=True)
-            except:
-                # Fallback to direct params if validation fails
-                search_params = new_params
-                
-            lisans_tercih = YOKATLASLisansTercihSihirbazi(search_params)
-            result = lisans_tercih.search()
+        if NEW_SMART_API:
+            # Use new smart search functions (v0.4.3+)
+            search_params = {}
             
-            # Try to validate results with ProgramInfo if available
-            try:
-                validated_results = []
-                for item in result[:length] if isinstance(result, list) else []:
-                    try:
-                        program = ProgramInfo(**item)
-                        validated_results.append(program.model_dump())
-                    except:
-                        validated_results.append(item)
-                return {"data": validated_results, "total": len(validated_results)}
-            except:
-                return result
-        else:
-            # Use legacy API parameters
-            params = {
-                'yop_kodu': yop_kodu,
-                'uni_adi': uni_adi,
-                'program_adi': program_adi,
-                'sehir_adi': sehir_adi or sehir,  # Use sehir if sehir_adi is empty
-                'universite_turu': universite_turu,
-                'ucret_burs': ucret_burs,
-                'ogretim_turu': ogretim_turu,
-                'doluluk': doluluk,
-                'puan_turu': puan_turu.lower(),
-                'ust_bs': ust_bs,
-                'alt_bs': alt_bs,
-                'page': page
+            # Map user-friendly parameters to API parameters
+            if university or uni_adi:
+                search_params['uni_adi'] = university or uni_adi
+            if program or program_adi:
+                search_params['program_adi'] = program or program_adi
+            if city or sehir:
+                search_params['city'] = city or sehir
+            if score_type or puan_turu:
+                search_params['score_type'] = score_type or puan_turu
+            if university_type or universite_turu:
+                search_params['university_type'] = university_type or universite_turu
+            if fee_type or ucret_burs:
+                search_params['fee_type'] = fee_type or ucret_burs
+            if education_type or ogretim_turu:
+                search_params['education_type'] = education_type or ogretim_turu
+            if results_limit or length:
+                search_params['length'] = results_limit or length
+                
+            # Use smart search with fuzzy matching
+            results = search_lisans_programs(search_params, smart_search=True)
+            
+            # Validate and format results
+            validated_results = []
+            for program_data in results:
+                try:
+                    program = ProgramInfo(**program_data)
+                    validated_results.append(program.model_dump())
+                except Exception:
+                    # Include unvalidated data if validation fails
+                    validated_results.append(program_data)
+            
+            return {
+                "programs": validated_results,
+                "total_found": len(validated_results),
+                "search_method": "smart_search_v0.4.3",
+                "fuzzy_matching": True
             }
+            
+        else:
+            # Fallback to legacy API
+            params = {
+                'uni_adi': university or uni_adi,
+                'program_adi': program or program_adi,
+                'sehir_adi': city or sehir,
+                'puan_turu': (score_type or puan_turu).lower() if (score_type or puan_turu) else 'say',
+                'universite_turu': university_type or universite_turu,
+                'ucret_burs': fee_type or ucret_burs,
+                'ogretim_turu': education_type or ogretim_turu,
+                'page': 1
+            }
+            
+            # Remove empty parameters
+            params = {k: v for k, v in params.items() if v}
             
             lisans_tercih = YOKATLASLisansTercihSihirbazi(params)
             result = lisans_tercih.search()
-            return result
+            
+            return {
+                "programs": result[:results_limit] if isinstance(result, list) else result,
+                "total_found": len(result) if isinstance(result, list) else 0,
+                "search_method": "legacy_api",
+                "fuzzy_matching": False
+            }
             
     except Exception as e:
         print(f"Error in search_bachelor_degree_programs: {e}")
-        return {"error": str(e), "new_api": NEW_API, "has_models": HAS_MODELS}
+        return {
+            "error": str(e), 
+            "search_method": "smart_search" if NEW_SMART_API else "legacy_api",
+            "parameters_used": {
+                "university": university or uni_adi,
+                "program": program or program_adi,
+                "city": city or sehir
+            }
+        }
 
-# Tool for YOKATLAS Onlisans Tercih Sihirbazi
+# Tool for YOKATLAS Onlisans Search with Smart Features
 @mcp.tool()
 def search_associate_degree_programs(
+    # User-friendly parameters with fuzzy matching
+    university: str = '',              # University name (supports fuzzy matching like "anadolu", "istanbul")
+    program: str = '',                 # Program name (supports partial matching like "bilgisayar", "turizm")
+    city: str = '',                    # City name (like "istanbul", "ankara")
+    university_type: str = '',         # University type: Devlet, Vakıf, KKTC, Yurt Dışı
+    fee_type: str = '',               # Fee type: Ücretsiz, Ücretli, Burslu, %100 Burslu, etc.
+    education_type: str = '',          # Education type: Örgün, İkinci, Açıköğretim, Uzaktan
+    results_limit: int = 50,           # Number of results to return (default: 50)
+    # Legacy parameter support for backward compatibility
     yop_kodu: str = '',
     uni_adi: str = '',
     program_adi: str = '',
     sehir_adi: str = '',
-    universite_turu: str = '', # e.g., 'Devlet', 'Vakıf'
-    ucret_burs: str = '',     # e.g., 'Ücretsiz', '%100 Burslu', 'Burslu', 'Ücretli'
-    ogretim_turu: str = '',   # e.g., 'Örgün', 'İkinci Öğretim'
-    doluluk: str = '',        # e.g., '1' (Dolu), '0' (Boş), '' (Tümü)
-    ust_puan: float = 550.0,    # Upper bound for score (Puan)
-    alt_puan: float = 150.0,    # Lower bound for score
+    universite_turu: str = '',
+    ucret_burs: str = '',
+    ogretim_turu: str = '',
+    doluluk: str = '',
+    ust_puan: float = 550.0,
+    alt_puan: float = 150.0,
     page: int = 1
 ) -> dict:
     """
-    Searches for associate degree programs (Önlisans Tercih Sihirbazı)
-    based on various criteria.
+    Search for associate degree (önlisans) programs with smart fuzzy matching and user-friendly parameters.
+    
+    Smart Features:
+    - Fuzzy university name matching (e.g., "anadolu" → "ANADOLU ÜNİVERSİTESİ")
+    - Partial program name matching (e.g., "turizm" finds all tourism programs)
+    - Intelligent parameter normalization
+    - Type-safe validation
+    
+    Parameters:
+    - university: University name (fuzzy matching supported)
+    - program: Program/department name (partial matching supported)
+    - city: City name
+    - university_type: Type of university (Devlet, Vakıf, etc.)
+    - fee_type: Fee/scholarship information
+    - education_type: Type of education (Örgün, İkinci, etc.)
+    - results_limit: Maximum number of results to return
+    
+    Note: Associate degree programs use TYT scores, not SAY/EA/SOZ/DIL like bachelor programs.
     """
-    params = {
-        'yop_kodu': yop_kodu,
-        'uni_adi': uni_adi,
-        'program_adi': program_adi,
-        'sehir_adi': sehir_adi,
-        'universite_turu': universite_turu,
-        'ucret_burs': ucret_burs,
-        'ogretim_turu': ogretim_turu,
-        'doluluk': doluluk,
-        'ust_puan': ust_puan,
-        'alt_puan': alt_puan,
-        'page': page
-    }
     try:
-        onlisans_tercih = YOKATLASOnlisansTercihSihirbazi(params)
-        result = onlisans_tercih.search()
-        return result
+        if NEW_SMART_API:
+            # Use new smart search functions (v0.4.3+)
+            search_params = {}
+            
+            # Map user-friendly parameters to API parameters
+            if university or uni_adi:
+                search_params['uni_adi'] = university or uni_adi
+            if program or program_adi:
+                search_params['program_adi'] = program or program_adi
+            if city or sehir_adi:
+                search_params['city'] = city or sehir_adi
+            if university_type or universite_turu:
+                search_params['university_type'] = university_type or universite_turu
+            if fee_type or ucret_burs:
+                search_params['fee_type'] = fee_type or ucret_burs
+            if education_type or ogretim_turu:
+                search_params['education_type'] = education_type or ogretim_turu
+            if results_limit:
+                search_params['length'] = results_limit
+                
+            # Use smart search with fuzzy matching
+            results = search_onlisans_programs(search_params, smart_search=True)
+            
+            # Format results consistently
+            return {
+                "programs": results,
+                "total_found": len(results),
+                "search_method": "smart_search_v0.4.3",
+                "fuzzy_matching": True,
+                "program_type": "associate_degree"
+            }
+            
+        else:
+            # Fallback to legacy API
+            params = {
+                'yop_kodu': yop_kodu,
+                'uni_adi': university or uni_adi,
+                'program_adi': program or program_adi,
+                'sehir_adi': city or sehir_adi,
+                'universite_turu': university_type or universite_turu,
+                'ucret_burs': fee_type or ucret_burs,
+                'ogretim_turu': education_type or ogretim_turu,
+                'doluluk': doluluk,
+                'ust_puan': ust_puan,
+                'alt_puan': alt_puan,
+                'page': page
+            }
+            
+            # Remove empty parameters
+            params = {k: v for k, v in params.items() if v or isinstance(v, (int, float))}
+            
+            onlisans_tercih = YOKATLASOnlisansTercihSihirbazi(params)
+            result = onlisans_tercih.search()
+            
+            return {
+                "programs": result[:results_limit] if isinstance(result, list) else result,
+                "total_found": len(result) if isinstance(result, list) else 0,
+                "search_method": "legacy_api",
+                "fuzzy_matching": False,
+                "program_type": "associate_degree"
+            }
+            
     except Exception as e:
         print(f"Error in search_associate_degree_programs: {e}")
-        return {"error": str(e), "params_used": params}
+        return {
+            "error": str(e),
+            "search_method": "smart_search" if NEW_SMART_API else "legacy_api",
+            "parameters_used": {
+                "university": university or uni_adi,
+                "program": program or program_adi,
+                "city": city or sehir_adi
+            },
+            "program_type": "associate_degree"
+        }
 
 def main():
     """Main entry point for the YOKATLAS MCP server."""
