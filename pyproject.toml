@@ -11,8 +11,8 @@ requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.12.3",
     "fastmcp>=2.10.5",
-    "yokatlas-py==0.5.0",
     "setuptools>=80.9.0",
+    "yokatlas-py==0.5.0",
 ]
 
 [project.scripts]
