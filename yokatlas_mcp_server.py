@@ -1,5 +1,5 @@
 import asyncio  # Required for async yokatlas_py functions
-from typing import Literal, Annotated
+from typing import Literal, Annotated, Optional
 from pydantic import Field
 
 from fastmcp import FastMCP
@@ -36,11 +36,11 @@ async def get_associate_degree_atlas_details(
 ) -> dict:
     """
     Get comprehensive details for a specific associate degree program from YOKATLAS Atlas.
-    
+
     Parameters:
     - yop_kodu (str): Program YÖP code (e.g., '120910060')
     - year (int): Data year (e.g., 2024, 2023)
-    
+
     Returns detailed information including:
     - General program information and statistics
     - Quota, placement, and score data
@@ -66,11 +66,11 @@ async def get_bachelor_degree_atlas_details(
 ) -> dict:
     """
     Get comprehensive details for a specific bachelor's degree program from YOKATLAS Atlas.
-    
+
     Parameters:
     - yop_kodu (str): Program YÖP code (e.g., '102210277')
     - year (int): Data year (e.g., 2024, 2023)
-    
+
     Returns detailed information including:
     - General program information and statistics
     - Quota, placement, and score data
@@ -93,11 +93,11 @@ def search_bachelor_degree_programs(
     university: Annotated[str, Field(description="University name with fuzzy matching support (e.g., 'boğaziçi' → 'BOĞAZİÇİ ÜNİVERSİTESİ')")] = '',
     program: Annotated[str, Field(description="Program/department name with partial matching (e.g., 'bilgisayar' finds all computer programs)")] = '',
     city: Annotated[str, Field(description="City name where the university is located")] = '',
-    score_type: Annotated[Literal['SAY', 'EA', 'SOZ', 'DIL'], Field(description="Score type: SAY (Science), EA (Equal Weight), SOZ (Verbal), DIL (Language)")] = 'SAY',
-    university_type: Annotated[Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'], Field(description="University type: Devlet (State), Vakıf (Foundation), KKTC (TRNC), Yurt Dışı (International)")] = '',
-    fee_type: Annotated[Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'], Field(description="Fee status: Ücretsiz (Free), Ücretli (Paid), İÖ-Ücretli (Evening-Paid), Burslu (Scholarship), İndirimli (Discounted), AÖ-Ücretli (Open Education-Paid), UÖ-Ücretli (Distance Learning-Paid)")] = '',
-    education_type: Annotated[Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'], Field(description="Education type: Örgün (Regular), İkinci (Evening), Açıköğretim (Open Education), Uzaktan (Distance Learning)")] = '',
-    availability: Annotated[Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'], Field(description="Program availability: Doldu (Filled), Doldu# (Filled with conditions), Dolmadı (Not filled), Yeni (New program)")] = '',
+    score_type: Annotated[Optional[Literal['SAY', 'EA', 'SOZ', 'DIL']], Field(description="Score type")] = None,
+        university_type: Annotated[Optional[Literal['Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı']], Field(description="University type")] = None,
+    fee_type: Annotated[Optional[Literal['Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli']], Field(description="Fee status: Ücretsiz (Free), Ücretli (Paid), İÖ-Ücretli (Evening-Paid), Burslu (Scholarship), İndirimli (Discounted), AÖ-Ücretli (Open Education-Paid), UÖ-Ücretli (Distance Learning-Paid)")] = None,
+    education_type: Annotated[Optional[Literal['Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan']], Field(description="Education type: Örgün (Regular), İkinci (Evening), Açıköğretim (Open Education), Uzaktan (Distance Learning)")] = None,
+    availability: Annotated[Optional[Literal['Doldu', 'Doldu#', 'Dolmadı', 'Yeni']], Field(description="Program availability: Doldu (Filled), Doldu# (Filled with conditions), Dolmadı (Not filled), Yeni (New program)")] = None,
     results_limit: Annotated[int, Field(description="Maximum number of results to return", ge=1, le=500)] = 50,
     # Legacy parameter support for backward compatibility
     uni_adi: str = '',
@@ -111,13 +111,13 @@ def search_bachelor_degree_programs(
 ) -> dict:
     """
     Search for bachelor's degree programs with smart fuzzy matching and user-friendly parameters.
-    
+
     Smart Features:
     - Fuzzy university name matching (e.g., "boğaziçi" → "BOĞAZİÇİ ÜNİVERSİTESİ")
     - Partial program name matching (e.g., "bilgisayar" finds all computer programs)
     - Intelligent parameter normalization
     - Type-safe validation
-    
+
     Parameters:
     - university: University name (fuzzy matching supported)
     - program: Program/department name (partial matching supported)
@@ -132,7 +132,7 @@ def search_bachelor_degree_programs(
         if NEW_SMART_API:
             # Use new smart search functions (v0.4.3+)
             search_params = {}
-            
+
             # Map user-friendly parameters to API parameters
             if university or uni_adi:
                 search_params['uni_adi'] = university or uni_adi
@@ -150,10 +150,10 @@ def search_bachelor_degree_programs(
                 search_params['education_type'] = education_type or ogretim_turu
             if results_limit or length:
                 search_params['length'] = results_limit or length
-                
+
             # Use smart search with fuzzy matching
             results = search_lisans_programs(search_params, smart_search=True)
-            
+
             # Validate and format results
             validated_results = []
             for program_data in results:
@@ -163,14 +163,14 @@ def search_bachelor_degree_programs(
                 except Exception:
                     # Include unvalidated data if validation fails
                     validated_results.append(program_data)
-            
+
             return {
                 "programs": validated_results,
                 "total_found": len(validated_results),
                 "search_method": "smart_search_v0.4.3",
                 "fuzzy_matching": True
             }
-            
+
         else:
             # Fallback to legacy API
             params = {
@@ -183,24 +183,24 @@ def search_bachelor_degree_programs(
                 'ogretim_turu': education_type or ogretim_turu,
                 'page': 1
             }
-            
+
             # Remove empty parameters
             params = {k: v for k, v in params.items() if v}
-            
+
             lisans_tercih = YOKATLASLisansTercihSihirbazi(params)
             result = lisans_tercih.search()
-            
+
             return {
                 "programs": result[:results_limit] if isinstance(result, list) else result,
                 "total_found": len(result) if isinstance(result, list) else 0,
                 "search_method": "legacy_api",
                 "fuzzy_matching": False
             }
-            
+
     except Exception as e:
         print(f"Error in search_bachelor_degree_programs: {e}")
         return {
-            "error": str(e), 
+            "error": str(e),
             "search_method": "smart_search" if NEW_SMART_API else "legacy_api",
             "parameters_used": {
                 "university": university or uni_adi,
@@ -216,10 +216,10 @@ def search_associate_degree_programs(
     university: Annotated[str, Field(description="University name with fuzzy matching support (e.g., 'anadolu' → 'ANADOLU ÜNİVERSİTESİ')")] = '',
     program: Annotated[str, Field(description="Program name with partial matching (e.g., 'turizm' finds all tourism programs)")] = '',
     city: Annotated[str, Field(description="City name where the university is located")] = '',
-    university_type: Annotated[Literal['', 'Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı'], Field(description="University type: Devlet (State), Vakıf (Foundation), KKTC (TRNC), Yurt Dışı (International)")] = '',
-    fee_type: Annotated[Literal['', 'Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli'], Field(description="Fee status: Ücretsiz (Free), Ücretli (Paid), İÖ-Ücretli (Evening-Paid), Burslu (Scholarship), İndirimli (Discounted), AÖ-Ücretli (Open Education-Paid), UÖ-Ücretli (Distance Learning-Paid)")] = '',
-    education_type: Annotated[Literal['', 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan'], Field(description="Education type: Örgün (Regular), İkinci (Evening), Açıköğretim (Open Education), Uzaktan (Distance Learning)")] = '',
-    availability: Annotated[Literal['', 'Doldu', 'Doldu#', 'Dolmadı', 'Yeni'], Field(description="Program availability: Doldu (Filled), Doldu# (Filled with conditions), Dolmadı (Not filled), Yeni (New program)")] = '',
+    university_type: Annotated[Optional[Literal['Devlet', 'Vakıf', 'KKTC', 'Yurt Dışı']], Field(description="University type: Devlet (State), Vakıf (Foundation), KKTC (TRNC), Yurt Dışı (International)")] = None,
+    fee_type: Annotated[Optional[Literal['Ücretsiz', 'Ücretli', 'İÖ-Ücretli', 'Burslu', '%50 İndirimli', '%25 İndirimli', 'AÖ-Ücretli', 'UÖ-Ücretli']], Field(description="Fee status: Ücretsiz (Free), Ücretli (Paid), İÖ-Ücretli (Evening-Paid), Burslu (Scholarship), İndirimli (Discounted), AÖ-Ücretli (Open Education-Paid), UÖ-Ücretli (Distance Learning-Paid)")] = None,
+    education_type: Annotated[Optional[Literal[ 'Örgün', 'İkinci', 'Açıköğretim', 'Uzaktan']], Field(description="Education type: Örgün (Regular), İkinci (Evening), Açıköğretim (Open Education), Uzaktan (Distance Learning)")] = None,
+    availability: Annotated[Optional[Literal['Doldu', 'Doldu#', 'Dolmadı', 'Yeni']], Field(description="Program availability: Doldu (Filled), Doldu# (Filled with conditions), Dolmadı (Not filled), Yeni (New program)")] = None,
     results_limit: Annotated[int, Field(description="Maximum number of results to return", ge=1, le=500)] = 50,
     # Legacy parameter support for backward compatibility
     yop_kodu: str = '',
@@ -236,13 +236,13 @@ def search_associate_degree_programs(
 ) -> dict:
     """
     Search for associate degree (önlisans) programs with smart fuzzy matching and user-friendly parameters.
-    
+
     Smart Features:
     - Fuzzy university name matching (e.g., "anadolu" → "ANADOLU ÜNİVERSİTESİ")
     - Partial program name matching (e.g., "turizm" finds all tourism programs)
     - Intelligent parameter normalization
     - Type-safe validation
-    
+
     Parameters:
     - university: University name (fuzzy matching supported)
     - program: Program/department name (partial matching supported)
@@ -251,14 +251,14 @@ def search_associate_degree_programs(
     - fee_type: Fee/scholarship information
     - education_type: Type of education (Örgün, İkinci, etc.)
     - results_limit: Maximum number of results to return
-    
+
     Note: Associate degree programs use TYT scores, not SAY/EA/SOZ/DIL like bachelor programs.
     """
     try:
         if NEW_SMART_API:
             # Use new smart search functions (v0.4.3+)
             search_params = {}
-            
+
             # Map user-friendly parameters to API parameters
             if university or uni_adi:
                 search_params['uni_adi'] = university or uni_adi
@@ -274,10 +274,10 @@ def search_associate_degree_programs(
                 search_params['education_type'] = education_type or ogretim_turu
             if results_limit:
                 search_params['length'] = results_limit
-                
+
             # Use smart search with fuzzy matching
             results = search_onlisans_programs(search_params, smart_search=True)
-            
+
             # Format results consistently
             return {
                 "programs": results,
@@ -286,7 +286,7 @@ def search_associate_degree_programs(
                 "fuzzy_matching": True,
                 "program_type": "associate_degree"
             }
-            
+
         else:
             # Fallback to legacy API
             params = {
@@ -302,13 +302,13 @@ def search_associate_degree_programs(
                 'alt_puan': alt_puan,
                 'page': page
             }
-            
+
             # Remove empty parameters
             params = {k: v for k, v in params.items() if v or isinstance(v, (int, float))}
-            
+
             onlisans_tercih = YOKATLASOnlisansTercihSihirbazi(params)
             result = onlisans_tercih.search()
-            
+
             return {
                 "programs": result[:results_limit] if isinstance(result, list) else result,
                 "total_found": len(result) if isinstance(result, list) else 0,
@@ -316,7 +316,7 @@ def search_associate_degree_programs(
                 "fuzzy_matching": False,
                 "program_type": "associate_degree"
             }
-            
+
     except Exception as e:
         print(f"Error in search_associate_degree_programs: {e}")
         return {
@@ -333,10 +333,10 @@ def search_associate_degree_programs(
 def main():
     """Main entry point for the YOKATLAS MCP server."""
     import sys
-    
+
     # Default to stdio transport for MCP compatibility
     transport = "stdio"
-    
+
     # Check if running in development mode
     if "--dev" in sys.argv:
         transport = "sse"
