@@ -1,253 +1,139 @@
-# YOKATLAS API MCP Sunucusu
+# YOKATLAS MCP: Türk Yükseköğretim Atlası için MCP Sunucusu
 
-[![Star History Chart](https://api.star-history.com/svg?repos=saidsurucu/yokatlas-mcp&type=Date)](https://www.star-history.com/#saidsurucu/yokatlas-mcp&Date)
+Bu proje, [YÖKATLAS](https://yokatlas.yok.gov.tr/) verilerine erişimi kolaylaştıran bir [FastMCP](https://gofastmcp.com/) sunucusu oluşturur. Bu sayede, YÖKATLAS'tan lisans ve önlisans program arama ve detaylı istatistik getirme işlemleri, Model Context Protocol (MCP) destekleyen LLM (Büyük Dil Modeli) uygulamaları (örneğin Claude Desktop veya [5ire](https://5ire.app)) ve diğer istemciler tarafından araç (tool) olarak kullanılabilir hale gelir.
 
-Bu proje, [YÖKATLAS](https://yokatlas.yok.gov.tr/) verilerine erişimi sağlayan `yokatlas-py` Python kütüphanesini kullanarak bir [FastMCP](https://www.gofastmcp.com/) sunucusu oluşturur. Bu sayede, YÖKATLAS API fonksiyonları, Model Context Protocol (MCP) destekleyen LLM (Büyük Dil Modeli) uygulamaları ve diğer istemciler tarafından araç (tool) olarak kullanılabilir hale gelir.
+![YOKATLAS MCP Örneği](./ornek.png)
 
-![örnek](./ornek.png)
-
-## 🎯 Temel Özellikler
+🎯 **Temel Özellikler**
 
 * YÖKATLAS verilerine programatik erişim için standart bir MCP arayüzü.
-* Lisans ve Önlisans program detaylarını getirme.
-* Lisans ve Önlisans programları için kapsamlı arama yapabilme (Tercih Sihirbazı).
-* Claude Desktop uygulaması ile kolay entegrasyon.
+* Aşağıdaki yetenekler:
+    * **Akıllı Program Arama:** Fuzzy matching ile üniversite ve program adı arama (örn: "boğaziçi" → "BOĞAZİÇİ ÜNİVERSİTESİ")
+    * **Lisans Program Detayları:** Kontenjan, yerleşme puanları, öğrenci demografisi, akademik kadro bilgileri
+    * **Önlisans Program Detayları:** Kontenjan, yerleşme verileri, tesis bilgileri
+    * **Kapsamlı Filtreleme:** Şehir, üniversite türü, ücret durumu, öğretim türü
+* Claude Desktop uygulaması ile `fastmcp install` komutu (veya manuel yapılandırma) kullanılarak kolay entegrasyon.
+* YOKATLAS MCP [5ire](https://5ire.app) gibi Claude Desktop haricindeki MCP istemcilerini de destekler.
 
-## 📋 Ön Gereksinimler
+---
 
-* **Python Sürümü:** Python 3.12 veya daha yeni bir sürümünün sisteminizde kurulu olması gerekmektedir. Python'ı [python.org](https://www.python.org/downloads/) adresinden indirebilirsiniz.
-* **pip:** Python ile birlikte gelen `pip` paket yöneticisinin çalışır durumda olması gerekir.
+## 🚀 5 Dakikada Başla (Remote MCP)
 
-<details>
-<summary>⚙️ Kurulum Adımları</summary>
+### ✅ Kurulum Gerektirmez! Hemen Kullan!
 
-### Hızlı Kurulum (Önerilen)
+🔗 **Remote MCP Adresi:** `https://yokatlasmcp.fastmcp.app/mcp`
 
-Claude Desktop'a entegre etmek için sadece `uv` kurulumuna ihtiyacınız var:
+### Claude Desktop ile Kullanım
 
-#### 1. `uv` Kurulumu
-`uv`, hızlı bir Python paket yöneticisidir.
+1. **Claude Desktop'ı açın**
+2. **Settings → Connectors → Add Custom Connector**
+3. **Bilgileri girin:**
+   - **Name:** `YOKATLAS MCP`
+   - **URL:** `https://yokatlasmcp.fastmcp.app/mcp`
+4. **Add** butonuna tıklayın
+5. **Hemen kullanmaya başlayın!** 🎉
 
-* **macOS ve Linux:**
-  ```bash
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  ```
+### Google Antigravity ile Kullanım
 
-* **Windows (PowerShell):**
-  ```bash
-  powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-  ```
-
-* **pip ile kurulum:**
-  ```bash
-  pip install uv
-  ```
-
-Kurulumu doğrulayın: `uv --version`
-
-#### 2. Claude Desktop'a Ekleme
-
-Claude Desktop ayarlarından (Settings > Developer > Edit Config) yapılandırma dosyasına aşağıdaki girdiyi ekleyin:
+1. **Agent session** açın ve editörün yan panelindeki **"…"** dropdown menüsüne tıklayın
+2. **MCP Servers** seçeneğini seçin - MCP Store açılacak
+3. Üstteki **Manage MCP Servers** butonuna tıklayın
+4. **View raw config** seçeneğine tıklayın
+5. `mcp_config.json` dosyasına aşağıdaki yapılandırmayı ekleyin:
 
 ```json
 {
   "mcpServers": {
-    "YOKATLAS API Servisi": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/saidsurucu/yokatlas-mcp",
-        "yokatlas-mcp"
-      ]
+    "yokatlas-mcp": {
+      "serverUrl": "https://yokatlasmcp.fastmcp.app/mcp/",
+      "headers": {
+        "Content-Type": "application/json"
+      }
     }
   }
 }
 ```
 
-Başarılı bir kurulumdan sonra, Claude Desktop uygulamasında YOKATLAS API araçlarını kullanabilirsiniz.
+> 💡 **İpucu:** Remote MCP sayesinde Python, uv veya herhangi bir kurulum yapmadan doğrudan Claude Desktop üzerinden YÖKATLAS verilerine erişebilirsiniz!
 
-</details>
+---
 
-<details>
-<summary>🚀 Claude Haricindeki Modellerle Kullanmak İçin Çok Kolay Kurulum (Örnek: 5ire için)</summary>
+## 🚀 Claude Haricindeki Modellerle Kullanmak İçin Çok Kolay Kurulum (Örnek: 5ire için)
 
 Bu bölüm, YOKATLAS MCP aracını 5ire gibi Claude Desktop dışındaki MCP istemcileriyle kullanmak isteyenler içindir.
 
-1. **Python Kurulumu:** Sisteminizde Python 3.12 veya üzeri kurulu olmalıdır. Kurulum sırasında "Add Python to PATH" (Python'ı PATH'e ekle) seçeneğini işaretlemeyi unutmayın. [Buradan indirebilirsiniz](https://www.python.org/downloads/).
+* **Python Kurulumu:** Sisteminizde Python 3.12 kurulu olmalıdır. Kurulum sırasında "**Add Python to PATH**" (Python'ı PATH'e ekle) seçeneğini işaretlemeyi unutmayın. [Buradan](https://www.python.org/downloads/) indirebilirsiniz.
+* **Git Kurulumu (Windows):** Bilgisayarınıza [git](https://git-scm.com/downloads/win) yazılımını indirip kurun. "Git for Windows/x64 Setup" seçeneğini indirmelisiniz.
+* **`uv` Kurulumu:**
+    * **Windows Kullanıcıları (PowerShell):** Bir CMD ekranı açın ve bu kodu çalıştırın: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+    * **Mac/Linux Kullanıcıları (Terminal):** Bir Terminal ekranı açın ve bu kodu çalıştırın: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+* **Microsoft Visual C++ Redistributable (Windows):** Bazı Python paketlerinin doğru çalışması için gereklidir. [Buradan](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) indirip kurun.
+* İşletim sisteminize uygun [5ire](https://5ire.app) MCP istemcisini indirip kurun.
+* 5ire'ı açın. **Workspace -> Providers** menüsünden kullanmak istediğiniz LLM servisinin API anahtarını girin.
+* **Tools** menüsüne girin. **+Local** veya **New** yazan butona basın.
+    * **Tool Key:** `yokatlasmcp`
+    * **Name:** `YOKATLAS MCP`
+    * **Command:**
+        ```
+        uvx --from git+https://github.com/saidsurucu/yokatlas-mcp yokatlas-mcp
+        ```
+    * **Save** butonuna basarak kaydedin.
 
-2. **Git Kurulumu (Windows):** Bilgisayarınıza git yazılımını [indirip kurun](https://git-scm.com/download/win). "Git for Windows/x64 Setup" seçeneğini indirmelisiniz.
+* Şimdi **Tools** altında **YOKATLAS MCP**'yi görüyor olmalısınız. Üstüne geldiğinizde sağda çıkan butona tıklayıp etkinleştirin (yeşil ışık yanmalı).
+* Artık YOKATLAS MCP ile konuşabilirsiniz.
 
-3. **uv Kurulumu:**
-   - **Windows Kullanıcıları (PowerShell):** Bir CMD ekranı açın ve bu kodu çalıştırın: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
-   - **Mac/Linux Kullanıcıları (Terminal):** Bir Terminal ekranı açın ve bu kodu çalıştırın: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+---
 
-4. **Microsoft Visual C++ Redistributable (Windows):** Bazı Python paketlerinin doğru çalışması için gereklidir. [Buradan indirip kurun](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+## ⚙️ Claude Desktop Manuel Kurulumu
 
-5. İşletim sisteminize uygun 5ire MCP istemcisini indirip kurun.
+1.  **Ön Gereksinimler:** Python, `uv`, (Windows için) Microsoft Visual C++ Redistributable'ın sisteminizde kurulu olduğundan emin olun. Detaylı bilgi için yukarıdaki "5ire için Kurulum" bölümündeki ilgili adımlara bakabilirsiniz.
+2.  Claude Desktop **Settings -> Developer -> Edit Config**.
+3.  Açılan `claude_desktop_config.json` dosyasına `mcpServers` altına ekleyin:
 
-6. 5ire'ı açın. **Workspace → Providers** menüsünden kullanmak istediğiniz LLM servisinin API anahtarını girin.
+    ```json
+    {
+      "mcpServers": {
+        "YOKATLAS MCP": {
+          "command": "uvx",
+          "args": [
+            "--from", "git+https://github.com/saidsurucu/yokatlas-mcp",
+            "yokatlas-mcp"
+          ]
+        }
+      }
+    }
+    ```
 
-7. **Tools** menüsüne girin. **+Local** veya **New** yazan butona basın.
+4.  Claude Desktop'ı kapatıp yeniden başlatın.
 
-8. Aşağıdaki bilgileri girin:
-   - **Tool Key:** `yokatlasmcp`
-   - **Name:** `YOKATLAS MCP`
-   - **Command:**
-     ```
-     uvx --from git+https://github.com/saidsurucu/yokatlas-mcp yokatlas-mcp
-     ```
-
-9. **Save** butonuna basarak kaydedin.
-
-10. Şimdi **Tools** altında **YOKATLAS MCP**'yi görüyor olmalısınız. Üstüne geldiğinizde sağda çıkan butona tıklayıp etkinleştirin (yeşil ışık yanmalı).
-
-11. Artık YOKATLAS MCP ile konuşabilirsiniz.
-
-</details>
-
-<details>
-<summary>🔧 Gemini CLI ile Kullanmak İçin Kurulum</summary>
-
-**Video Rehber:** [Gemini CLI MCP Kurulum Videosu](https://youtu.be/mP_4ulb81zw)
-
-**Ön Gereksinimler:** Python, uv, (Windows için) Microsoft Visual C++ Redistributable'ın sisteminizde kurulu olduğundan emin olun. Detaylı bilgi için yukarıdaki "5ire için Kurulum" bölümündeki ilgili adımlara bakabilirsiniz.
-
-1. **Gemini CLI ayarlarını yapılandırın:**
-
-   Gemini CLI'ın ayar dosyasını düzenleyin:
-   - **macOS/Linux:** `~/.gemini/settings.json`
-   - **Windows:** `%USERPROFILE%\.gemini\settings.json`
-
-2. **Aşağıdaki mcpServers bloğunu ekleyin:**
-
-   ```json
-   {
-     "theme": "Default",
-     "selectedAuthType": "oauth-personal",
-     "mcpServers": {
-       "yokatlas_mcp": {
-         "command": "uvx",
-         "args": [
-           "--from",
-           "git+https://github.com/saidsurucu/yokatlas-mcp",
-           "yokatlas-mcp"
-         ]
-       }
-     }
-   }
-   ```
-
-3. **Yapılandırma açıklamaları:**
-   - `"yokatlas_mcp"`: Sunucunuz için yerel bir isim
-   - `"command"`: uvx komutu (uv'nin paket çalıştırma aracı)
-   - `"args"`: GitHub'dan doğrudan YOKATLAS MCP'yi çalıştırmak için gerekli argümanlar
-
-4. **Kullanım:**
-   - Gemini CLI'ı başlatın
-   - YOKATLAS MCP araçları otomatik olarak kullanılabilir olacaktır
-   - **Örnek komutlar:**
-     - "İstanbul'daki tıp fakültelerinin 2024 taban puanlarını getir"
-     - "Boğaziçi Üniversitesi Bilgisayar Mühendisliği programının detaylarını ara"
-     - "SAY puan türünde 400-500 bin sıralama aralığındaki mühendislik programlarını listele"
-
-</details>
+---
 
 ## 🛠️ Kullanılabilir Araçlar (MCP Tools)
 
-Bu FastMCP sunucusu aşağıdaki araçları sunar:
+Bu FastMCP sunucusu LLM modelleri için aşağıdaki araçları sunar:
 
-### 🔍 Akıllı Arama Araçları (Smart Search Tools)
+### 🔍 Akıllı Arama Araçları
 
-1.  **`search_bachelor_degree_programs`** ⭐ **YENİ Smart Search**
-    * **Açıklama:** Lisans programları için akıllı arama (Fuzzy matching ile)
-    * **Özellikler:**
-      - 🧠 **Fuzzy Matching:** "boğaziçi" → "BOĞAZİÇİ ÜNİVERSİTESİ"
-      - 🔎 **Kısmi Eşleştirme:** "bilgisayar" → tüm bilgisayar programları
-      - 📝 **Kullanıcı Dostu Parametreler:** `university`, `program`, `city`
-      - ✅ **Type-Safe Validation:** Pydantic modelleri ile
-    * **Parametreler:**
-      - `university` (str): Üniversite adı (fuzzy matching)
-      - `program` (str): Program adı (kısmi eşleştirme) 
-      - `city` (str): Şehir adı
-      - `score_type` (str): Puan türü (SAY, EA, SOZ, DIL)
-      - `university_type` (str): Üniversite türü (Devlet, Vakıf)
-      - `fee_type` (str): Ücret durumu
-      - `education_type` (str): Öğretim türü
-      - `results_limit` (int): Sonuç sayısı (varsayılan: 50)
+* **`search_bachelor_degree_programs`**: Lisans programları için akıllı arama (Fuzzy matching ile)
+    * **Özellikler:** Fuzzy matching ("boğaziçi" → "BOĞAZİÇİ ÜNİVERSİTESİ"), kısmi eşleştirme ("bilgisayar" → tüm bilgisayar programları)
+    * **Parametreler**: `university`, `program`, `city`, `score_type` (SAY/EA/SOZ/DIL), `university_type`, `fee_type`, `education_type`, `availability`, `results_limit`
 
-2.  **`search_associate_degree_programs`** ⭐ **YENİ Smart Search**
-    * **Açıklama:** Önlisans programları için akıllı arama (Fuzzy matching ile)
-    * **Özellikler:**
-      - 🧠 **Fuzzy Matching:** "anadolu" → "ANADOLU ÜNİVERSİTESİ"
-      - 🔎 **Kısmi Eşleştirme:** "turizm" → tüm turizm programları
-      - 📝 **Kullanıcı Dostu Parametreler:** `university`, `program`, `city`
-      - ⚡ **TYT Puan Sistemi:** Önlisans için özel puan sistemi
-    * **Parametreler:**
-      - `university` (str): Üniversite adı (fuzzy matching)
-      - `program` (str): Program adı (kısmi eşleştirme)
-      - `city` (str): Şehir adı
-      - `university_type` (str): Üniversite türü
-      - `fee_type` (str): Ücret durumu
-      - `education_type` (str): Öğretim türü
-      - `results_limit` (int): Sonuç sayısı (varsayılan: 50)
+* **`search_associate_degree_programs`**: Önlisans programları için akıllı arama (Fuzzy matching ile)
+    * **Özellikler:** Fuzzy matching, kısmi eşleştirme, TYT puan sistemi desteği
+    * **Parametreler**: `university`, `program`, `city`, `university_type`, `fee_type`, `education_type`, `availability`, `results_limit`
 
 ### 📊 Atlas Detay Araçları
 
-3.  **`get_bachelor_degree_atlas_details`**
-    * **Açıklama:** Belirli bir lisans programının YOKATLAS Atlas'tan kapsamlı detaylarını getirir
-    * **Parametreler:**
-      - `yop_kodu` (str): Program YÖP kodu (örn: '102210277')
-      - `year` (int): Veri yılı (örn: 2024, 2023)
-    * **Döndürülen Veriler:**
-      - Genel program bilgileri ve istatistikleri
-      - Kontenjan, yerleşme ve puan verileri
-      - Öğrenci demografik dağılımları
-      - Akademik kadro ve tesis bilgileri
-      - Geçmiş yerleşme trendleri
+* **`get_bachelor_degree_atlas_details`**: Belirli bir lisans programının kapsamlı detaylarını getirir
+    * **Parametreler**: `yop_kodu` (Program YÖP kodu), `year` (Veri yılı: 2025, 2024, 2023)
+    * **Döndürülen Veriler**: Kontenjan, yerleşme puanları, öğrenci demografisi, akademik kadro, tesis bilgileri
 
-4.  **`get_associate_degree_atlas_details`**
-    * **Açıklama:** Belirli bir önlisans programının YOKATLAS Atlas'tan kapsamlı detaylarını getirir
-    * **Parametreler:**
-      - `yop_kodu` (str): Program YÖP kodu (örn: '120910060')
-      - `year` (int): Veri yılı (örn: 2024, 2023)
-    * **Döndürülen Veriler:**
-      - Genel program bilgileri ve istatistikleri
-      - Kontenjan, yerleşme ve puan verileri
-      - Öğrenci demografik dağılımları
-      - Akademik kadro ve tesis bilgileri
-      - Geçmiş yerleşme trendleri
+* **`get_associate_degree_atlas_details`**: Belirli bir önlisans programının kapsamlı detaylarını getirir
+    * **Parametreler**: `yop_kodu` (Program YÖP kodu), `year` (Veri yılı: 2025, 2024, 2023)
+    * **Döndürülen Veriler**: Kontenjan, yerleşme verileri, öğrenci dağılımı, akademik kadro bilgileri
 
-### 🚀 Kullanım Örnekleri
-
-```python
-# Claude Desktop'ta kullanım örnekleri:
-
-# 1. Fuzzy matching ile üniversite arama
-"Boğaziçi üniversitesinin bilgisayar mühendisliği programlarını bul"
-# → "boğaziçi" otomatik olarak "BOĞAZİÇİ ÜNİVERSİTESİ" ile eşleşir
-
-# 2. Kısmi program adı ile arama  
-"İstanbul'daki tüm mühendislik programlarını listele"
-# → "mühendislik" kelimesi ile başlayan tüm programları bulur
-
-# 3. Şehir bazlı arama
-"Ankara'daki devlet üniversitelerindeki tıp programlarını göster"
-# → Şehir, üniversite türü ve program filtresi ile arama
-
-# 4. Önlisans programları
-"Anadolu üniversitesinin turizm ile ilgili önlisans programlarını bul"
-# → Fuzzy matching + kısmi eşleştirme ile önlisans arama
-
-# 5. Atlas detayları
-"102210277 YÖP kodlu programın 2024 yılı detaylarını getir"
-# → Program atlas detayları: kontenjan, yerleşme, puan istatistikleri
-
-# 6. Program kodu bulma ve atlas detayları
-"Boğaziçi bilgisayar mühendisliğini bul, sonra atlas detaylarını getir"
-# → Önce arama ile YÖP kodunu bul, sonra atlas detaylarını çek
-```
-
+---
 
 ## 📜 Lisans
 
-Bu proje MIT Lisansı altında lisanslanmıştır.
+Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakınız.
