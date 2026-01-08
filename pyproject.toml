@@ -12,7 +12,7 @@ dependencies = [
     "beautifulsoup4>=4.12.3",
     "fastmcp>=2.10.5",
     "setuptools>=80.9.0",
-    "yokatlas-py==0.5.3",
+    "yokatlas-py>=0.5.4",
 ]
 
 [project.scripts]
